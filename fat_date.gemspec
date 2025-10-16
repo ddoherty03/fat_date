@@ -10,11 +10,11 @@ Gem::Specification.new do |spec|
 
   spec.summary = "TODO: Write a short summary, because RubyGems requires one."
   spec.description = <<~DESC
-  FatDate provides useful extensions to the Date class including a way to
-  specify dates via a number of rich 'specs', strings that allow specifying
-  dates using calendar-based concepts, such as years, quarters, months,
-  semimonths, biweeks, weeks, and days.  Also, provide methods for determining
-  whether a given Date is a federal or NYSE holidays, and more.
+    FatDate provides useful extensions to the Date class including a way to
+    specify dates via a number of rich 'specs', strings that allow specifying
+    dates using calendar-based concepts, such as years, quarters, months,
+    semimonths, biweeks, weeks, and days.  Also, provide methods for determining
+    whether a given Date is a federal or NYSE holidays, and more.
   DESC
   spec.homepage      = 'https://github.com/ddoherty03/fat_date.git'
   spec.license       = 'MIT'
@@ -34,8 +34,8 @@ Gem::Specification.new do |spec|
         f.start_with?(*%w[bin/ spec/ .git .github Gemfile])
     end
   end
-  spec.bindir = "exe"
-  spec.executables   = spec.files.grep(%r{^bin/easter}) { |f| File.basename(f) }
+  # spec.bindir = "exe"
+  # spec.executables   = spec.files.grep(%r{^bin/easter}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
   # Uncomment to register a new dependency of your gem

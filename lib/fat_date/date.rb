@@ -1974,8 +1974,11 @@ module FatDate
         # Europe and in Spetember 1752 in England
         if y <= reform_year
           golden = y % 19 + 1
-          p_full = ::Date.new(y, GOLDEN_TO_FULLMOON[golden][0],
-                              GOLDEN_TO_FULLMOON[golden][1])
+          p_full = ::Date.new(
+            y,
+            GOLDEN_TO_FULLMOON[golden][0],
+            GOLDEN_TO_FULLMOON[golden][1],
+          )
           if p_full.wday.zero?
             p_full + 7.days
           else

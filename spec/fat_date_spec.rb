@@ -2,6 +2,6 @@
 
 RSpec.describe FatDate do
   it "has a version number" do
-    expect(FatDate::VERSION).not_to be nil
+    expect(FatDate::VERSION).not_to be_nil
   end
 end
