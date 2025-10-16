@@ -31,7 +31,7 @@ module FatDate
   # October, 2014).
   #
   # The Date extension defines a couple of class methods for parsing strings into
-  # Dates, especially Date.parse_spec, which allows Dates to be specified in a
+  # Dates, especially Date.spec, which allows Dates to be specified in a
   # lazy way, either absolutely or relative to the computer's clock.
   #
   # Finally FatDate's Date extensions provide thorough methods for determining if
@@ -1467,7 +1467,7 @@ module FatDate
       # when `spec_type` is `:to`.
       #
       # There are a number of forms the `spec` can take. In each case,
-      # `::Date.parse_spec` returns the first date in the period if `spec_type` is
+      # `::Date.spec` returns the first date in the period if `spec_type` is
       # `:from` and the last date in the period if `spec_type` is `:to`:
       #
       # - `YYYY-MM-DD` a particular date, so `:from` and `:to` return the same
@@ -1527,14 +1527,14 @@ module FatDate
       # foregoing paragraph.  It means that /starting from the date determined
       # by the date spec/, find the first Thursday before (<), on or before
       # (<=), after (>), or on or after (>=) the date.  So Thanksgiving in
-      # 2028 could be found with Date.parse_spec('2028-11<=Th', :to), i.e.,
+      # 2028 could be found with Date.spec('2028-11<=Th', :to), i.e.,
       # the last Thursday on or before the last day of November, 2028.
       #
       # @example
-      #   ::Date.parse_spec('2012-W32').iso      # => "2012-08-06"
-      #   ::Date.parse_spec('2012-W32', :to).iso # => "2012-08-12"
-      #   ::Date.parse_spec('W32').iso           # => "2012-08-06" if executed in 2012
-      #   ::Date.parse_spec('W32').iso           # => "2012-08-04" if executed in 2014
+      #   ::Date.spec('2012-W32').iso      # => "2012-08-06"
+      #   ::Date.spec('2012-W32', :to).iso # => "2012-08-12"
+      #   ::Date.spec('W32').iso           # => "2012-08-06" if executed in 2012
+      #   ::Date.spec('W32').iso           # => "2012-08-04" if executed in 2014
       #
       # @param spec [String, #to_s] the spec to be interpreted as a calendar period
       #
@@ -1543,7 +1543,7 @@ module FatDate
       #
       # @return [::Date] date that is the first (:from) or last (:to) in the period
       #   designated by spec
-      def parse_spec(spec, spec_type = :from)
+      def spec(spec, spec_type = :from)
         spec = spec.to_s.strip.clean
         unless %i[from to].include?(spec_type)
           raise ArgumentError, "invalid date spec type: '#{spec_type}'"
@@ -1643,10 +1643,10 @@ module FatDate
             else
               ::Date.new(year, 12, 31)
             end
-          when %r{\A(?<yr>\d\d\d\d)[-\/](?<mo>\d\d?)[-\/](?<hf_mo>(A|B))\z}i
-            # Year, month, half-month, designated with uppercase Roman
-            year = Regexp.last_match[:yr].to_i
-            month = Regexp.last_match[:mo].to_i
+          when %r{\A(((?<yr>\d\d\d\d)[-\/])?(?<mo>\d\d?)[-\/])?(?<hf_mo>(A|B))\z}i
+            # Year, month, half-month, designated with A or B
+            year = Regexp.last_match[:yr]&.to_i || ::Date.today.year
+            month = Regexp.last_match[:mo]&.to_i || ::Date.today.month
             hf_mo = Regexp.last_match[:hf_mo]
             if hf_mo == "A"
               spec_type == :from ? ::Date.new(year, month, 1) : ::Date.new(year, month, 15)
