@@ -5,11 +5,11 @@
 
 [[https://travis-ci.org/ddoherty03/fat_core.svg?branch=master]]
 
-* README Setup Do First for Code Blocks
+* README Setup Do First for Code Blocks                            :noexport:
 Run this block before all others to ensure that we are reading the libraries
 from the source directory.
 
-#+begin_src ruby :results output
+#+begin_src ruby :results output :export no
   puts "Current directory: #{Dir.pwd}"
   puts "Ruby LOADPATH:"
   $:.unshift("./lib") unless $:[0] == './lib'
@@ -38,9 +38,8 @@ Ruby LOADPATH:
 
 * FatDate
 
-~fat-date~ is a simple gem to collect core extensions and a few new classes
-that I find useful in multiple projects.  The emphasis is on extending the
-Date class to make it more useful in financial applications.
+~fat_date~ is a simple gem to collect core extensions for the Date class to
+make it more useful in financial applications.
 
 * Installation
 
@@ -105,7 +104,7 @@ reasonably be converted to a ~Date~:
 
 #+begin_example
 2025-06-03
-2025-10-15T14:37:53-05:00
+2025-10-18T04:54:44-05:00
 2025-03-03
 #+end_example
 
@@ -135,17 +134,16 @@ English: September 22, 1957
 American: 9/22/1957
 #+end_example
 
-Most of these are self-explanatory, but a couple are not.  The ~#org~ method
-formats a date as an Emacs org-mode timestamp, by default an inactive
-timestamp that does not show up in the org agenda, but can be made active with
-the optional parameter set to a truthy value.  See
-[[https://orgmode.org/manual/Timestamps.html#Timestamps]].
+Most of these are self-explanatory, but a couple are not.  The
+~Date.org(active: false)~ method formats a date as an Emacs org-mode
+timestamp, by default an inactive timestamp that does not show up in the org
+agenda, but can be made active with the optional parameter ~active:~ set to a
+truthy value.  See [[https://orgmode.org/manual/Timestamps.html#Timestamps]].
 
 The ~#tex_quote~ method formats the date in iso form but using TeX's
 convention of using en-dashes to separate the components.
 
 *** Chunks
-
 Many of the methods provided by ~FatDate~ deal with various calendar periods
 that are less common than those provided by the Ruby Standard Library or gems
 such as ~active_support~.  This documentation refers to these calendar periods
@@ -168,6 +166,8 @@ or end of each of these chunks:
   require_relative './lib/fat_date'
 
   tab = []
+  tab << ['Subject Date', 'Method', 'Result']
+  tab << nil
   d = Date.parse('2017-06-30')
   %i[beginning end].each do |side|
     %i(year half quarter bimonth month semimonth biweek week).each do |chunk|
@@ -179,22 +179,24 @@ or end of each of these chunks:
 #+end_SRC
 
 #+begin_example
-| 2017-06-30 | beginning_of_year?      | false |
-| 2017-06-30 | beginning_of_half?      | false |
-| 2017-06-30 | beginning_of_quarter?   | false |
-| 2017-06-30 | beginning_of_bimonth?   | false |
-| 2017-06-30 | beginning_of_month?     | false |
-| 2017-06-30 | beginning_of_semimonth? | false |
-| 2017-06-30 | beginning_of_biweek?    | false |
-| 2017-06-30 | beginning_of_week?      | false |
-| 2017-06-30 | end_of_year?            | false |
-| 2017-06-30 | end_of_half?            | true  |
-| 2017-06-30 | end_of_quarter?         | true  |
-| 2017-06-30 | end_of_bimonth?         | true  |
-| 2017-06-30 | end_of_month?           | true  |
-| 2017-06-30 | end_of_semimonth?       | true  |
-| 2017-06-30 | end_of_biweek?          | false |
-| 2017-06-30 | end_of_week?            | false |
+| Subject Date | Method                  | Result |
+|--------------+-------------------------+--------|
+| 2017-06-30   | beginning_of_year?      | false  |
+| 2017-06-30   | beginning_of_half?      | false  |
+| 2017-06-30   | beginning_of_quarter?   | false  |
+| 2017-06-30   | beginning_of_bimonth?   | false  |
+| 2017-06-30   | beginning_of_month?     | false  |
+| 2017-06-30   | beginning_of_semimonth? | false  |
+| 2017-06-30   | beginning_of_biweek?    | false  |
+| 2017-06-30   | beginning_of_week?      | false  |
+| 2017-06-30   | end_of_year?            | false  |
+| 2017-06-30   | end_of_half?            | true   |
+| 2017-06-30   | end_of_quarter?         | true   |
+| 2017-06-30   | end_of_bimonth?         | true   |
+| 2017-06-30   | end_of_month?           | true   |
+| 2017-06-30   | end_of_semimonth?       | true   |
+| 2017-06-30   | end_of_biweek?          | false  |
+| 2017-06-30   | end_of_week?            | false  |
 #+end_example
 
 It also provides corresponding methods that return the date at the beginning
@@ -204,6 +206,8 @@ or end of the calendar chunk, starting at the given date:
   require './lib/fat_date'
 
   tab = []
+  tab << ['Subject Date', 'Method', 'Result']
+  tab << nil
   d = Date.parse('2017-04-21')
   %i[beginning end].each do |side|
     %i(year half quarter bimonth month semimonth biweek week ).each do |chunk|
@@ -214,24 +218,25 @@ or end of the calendar chunk, starting at the given date:
   tab
 #+end_SRC
 
-#+RESULTS:
 #+begin_example
-| 2017-04-21 | d.beginning_of_year      | 2017-01-01 |
-| 2017-04-21 | d.beginning_of_half      | 2017-01-01 |
-| 2017-04-21 | d.beginning_of_quarter   | 2017-04-01 |
-| 2017-04-21 | d.beginning_of_bimonth   | 2017-03-01 |
-| 2017-04-21 | d.beginning_of_month     | 2017-04-01 |
-| 2017-04-21 | d.beginning_of_semimonth | 2017-04-16 |
-| 2017-04-21 | d.beginning_of_biweek    | 2017-04-10 |
-| 2017-04-21 | d.beginning_of_week      | 2017-04-17 |
-| 2017-04-21 | d.end_of_year            | 2017-12-31 |
-| 2017-04-21 | d.end_of_half            | 2017-06-30 |
-| 2017-04-21 | d.end_of_quarter         | 2017-06-30 |
-| 2017-04-21 | d.end_of_bimonth         | 2017-04-30 |
-| 2017-04-21 | d.end_of_month           | 2017-04-30 |
-| 2017-04-21 | d.end_of_semimonth       | 2017-04-30 |
-| 2017-04-21 | d.end_of_biweek          | 2017-04-23 |
-| 2017-04-21 | d.end_of_week            | 2017-04-23 |
+| Subject Date | Method                   | Result     |
+|--------------+--------------------------+------------|
+| 2017-04-21   | d.beginning_of_year      | 2017-01-01 |
+| 2017-04-21   | d.beginning_of_half      | 2017-01-01 |
+| 2017-04-21   | d.beginning_of_quarter   | 2017-04-01 |
+| 2017-04-21   | d.beginning_of_bimonth   | 2017-03-01 |
+| 2017-04-21   | d.beginning_of_month     | 2017-04-01 |
+| 2017-04-21   | d.beginning_of_semimonth | 2017-04-16 |
+| 2017-04-21   | d.beginning_of_biweek    | 2017-04-10 |
+| 2017-04-21   | d.beginning_of_week      | 2017-04-17 |
+| 2017-04-21   | d.end_of_year            | 2017-12-31 |
+| 2017-04-21   | d.end_of_half            | 2017-06-30 |
+| 2017-04-21   | d.end_of_quarter         | 2017-06-30 |
+| 2017-04-21   | d.end_of_bimonth         | 2017-04-30 |
+| 2017-04-21   | d.end_of_month           | 2017-04-30 |
+| 2017-04-21   | d.end_of_semimonth       | 2017-04-30 |
+| 2017-04-21   | d.end_of_biweek          | 2017-04-23 |
+| 2017-04-21   | d.end_of_week            | 2017-04-23 |
 #+end_example
 
 You can query which numerical half, quarter, etc. that a given date falls in:
@@ -240,6 +245,8 @@ You can query which numerical half, quarter, etc. that a given date falls in:
   require './lib/fat_date'
 
   tab = []
+  tab << ['Subject Date', 'Method', 'Result']
+  tab << nil
   %i(year half quarter bimonth month semimonth biweek week ).each do |chunk|
     d = Date.parse('2017-04-21') + rand(100)
     meth = "#{chunk}".to_sym
@@ -249,14 +256,16 @@ You can query which numerical half, quarter, etc. that a given date falls in:
 #+end_SRC
 
 #+begin_example
-| 2017-06-28 | d.year      | in year number 2017   |
-| 2017-05-22 | d.half      | in half number 1      |
-| 2017-05-09 | d.quarter   | in quarter number 2   |
-| 2017-05-19 | d.bimonth   | in bimonth number 3   |
-| 2017-05-07 | d.month     | in month number 5     |
-| 2017-05-04 | d.semimonth | in semimonth number 9 |
-| 2017-06-17 | d.biweek    | in biweek number 12   |
-| 2017-07-05 | d.week      | in week number 27     |
+| Subject Date | Method      | Result                 |
+|--------------+-------------+------------------------|
+| 2017-07-26   | d.year      | in year number 2017    |
+| 2017-06-01   | d.half      | in half number 1       |
+| 2017-07-08   | d.quarter   | in quarter number 3    |
+| 2017-04-30   | d.bimonth   | in bimonth number 2    |
+| 2017-05-01   | d.month     | in month number 5      |
+| 2017-05-18   | d.semimonth | in semimonth number 10 |
+| 2017-05-21   | d.biweek    | in biweek number 10    |
+| 2017-07-01   | d.week      | in week number 26      |
 #+end_example
 
 *** Parsing American Dates
@@ -283,6 +292,7 @@ Date.parse_american('9/22/1957') => 1957-09-22
 #+end_example
 
 *** Holidays and Workdays
+**** Federal
 One of the original motivations for this library was to provide an easy way to
 determine whether a given date is a federal holiday in the United States or,
 nearly but not quite the same, a non-trading day on the New York Stock
@@ -309,24 +319,6 @@ Methods concerning Federal holidays:
 - Date#prior_until_fed_workday -- starting with this date, move back until
   we hit a Federal workday
 
-And we have similar methods for "holidays" or non-trading days on the NYSE:
-
-- Date#nyse_holiday? -- is this date a NYSE holiday?
-- Date#nyse_workday? -- is it a date when the NYSE is open for trading?,
-  inverse of Date#nyse_holiday?
-- Date#add_nyse_workdays(n) -- n NYSE workdays following (or preceding if n
-  negative) this date,
-- Date#next_nyse_workday -- the next NYSE workday following this date,
-- Date#prior_nyse_workday -- the previous NYSE workday before this date,
-- Date#next_until_nyse_~~workday -- starting with this date, move forward until
-  we hit a NYSE workday
-- Date#prior_until_nyse_workday -- starting with this date, move back until
-  we hit a Federal workday
-
-The ~Date~ class extension adds two methods for determining whether a given
-date is a US federal holiday as defined by federal law, including such things
-as federal holidays established by executive decree:
-
 #+begin_SRC ruby
   require './lib/fat_date'
 
@@ -345,11 +337,33 @@ as federal holidays established by executive decree:
 | 2014-01-01 | true             | New Year  |
 #+end_example
 
+**** NYSE
+And we have similar methods for "holidays" or non-trading days on the NYSE:
+
+- Date#nyse_holiday? -- is this date a NYSE holiday?
+- Date#nyse_workday? -- is it a date when the NYSE is open for trading?,
+  inverse of Date#nyse_holiday?
+- Date#add_nyse_workdays(n) -- n NYSE workdays following (or preceding if n
+  negative) this date,
+- Date#next_nyse_workday -- the next NYSE workday following this date,
+- Date#prior_nyse_workday -- the previous NYSE workday before this date,
+- Date#next_until_nyse_~~workday -- starting with this date, move forward until
+  we hit a NYSE workday
+- Date#prior_until_nyse_workday -- starting with this date, move back until
+  we hit a Federal workday
+
+
 Likewise, days on which the NYSE is closed can be gotten with:
 
-#+begin_SRC ruby :session readme :export results
-  Date.parse('2014-04-18').nyse_holiday? => true # It's Good Friday
+#+begin_SRC ruby :results output
+  require './lib/fat_date'
+
+  puts Date.parse('2014-04-18').nyse_holiday?
 #+end_SRC
+
+#+begin_example
+true
+#+end_example
 
 #+begin_SRC ruby :results value
   require './lib/fat_date'
@@ -361,28 +375,23 @@ Likewise, days on which the NYSE is closed can be gotten with:
     ['2014-01-01', 'New Year']
   ]
   result = []
-  result << ['Date', 'Federal Holiday?', 'Comment']
+  result << ['Date', 'Federal Holiday?', 'NYSE Holiday?', 'Comment']
   result << nil
   date_comments.each do |str, comment|
     d = Date.parse(str)
-    result << [d.org, d.nyse_holiday?, comment]
+    result << [d.org, d.fed_holiday?, d.nyse_holiday?, comment]
   end
   result
 #+end_SRC
 
-#+RESULTS:
 #+begin_example
-| Date             | Federal Holiday? | Comment     |
-|------------------+------------------+-------------|
-| [2014-04-18 Fri] | true             | Good Friday |
-| [2014-05-18 Sun] | true             | Weekend     |
-| [2014-05-21 Wed] | false            | Any old day |
-| [2014-01-01 Wed] | true             | New Year    |
+| Date             | Federal Holiday? | NYSE Holiday? | Comment     |
+|------------------+------------------+---------------+-------------|
+| [2014-04-18 Fri] | false            | true          | Good Friday |
+| [2014-05-18 Sun] | true             | true          | Weekend     |
+| [2014-05-21 Wed] | false            | false         | Any old day |
+| [2014-01-01 Wed] | true             | true          | New Year    |
 #+end_example
-
-Conversely, ~Date#fed_workday?~ and ~Date#nyse_workday?~ return true if the
-federal government and the NYSE respectively are open for business on those
-days.
 
 *** Ordinal Weekdays in Month
 It is often useful to find the 1st, 2nd, etc, Sunday, Monday, etc. in a given
@@ -394,27 +403,30 @@ negative, which will count from the end of the month.
   require './lib/fat_date'
 
   results = []
+  results << ['n', 'Year', 'Month', 'nth Thursday']
+  results << nil
   (1..4).each do |n|
     d = Date.nth_wday_in_year_month(n, 4, 2024, 6)
-    results << [n, d.org]
+    results << [n, d.year, 'June', d.org]
   end
   (-4..-1).to_a.reverse.each do |n|
     d = Date.nth_wday_in_year_month(n, 4, 2024, 6)
-    results << [n, d.org]
+    results << [n, d.year, 'June', d.org]
   end
   results
 #+end_src
 
-#+RESULTS:
 #+begin_example
-| 1  | [2024-06-06 Thu] |
-| 2  | [2024-06-13 Thu] |
-| 3  | [2024-06-20 Thu] |
-| 4  | [2024-06-27 Thu] |
-| -1 | [2024-06-27 Thu] |
-| -2 | [2024-06-20 Thu] |
-| -3 | [2024-06-13 Thu] |
-| -4 | [2024-06-06 Thu] |
+| n  | Year | Month | nth Thursday     |
+|----+------+-------+------------------|
+| 1  | 2024 | June  | [2024-06-06 Thu] |
+| 2  | 2024 | June  | [2024-06-13 Thu] |
+| 3  | 2024 | June  | [2024-06-20 Thu] |
+| 4  | 2024 | June  | [2024-06-27 Thu] |
+| -1 | 2024 | June  | [2024-06-27 Thu] |
+| -2 | 2024 | June  | [2024-06-20 Thu] |
+| -3 | 2024 | June  | [2024-06-13 Thu] |
+| -4 | 2024 | June  | [2024-06-06 Thu] |
 #+end_example
 
 *** Easter
@@ -428,7 +440,12 @@ was September, 1752.  So, to get a historically accurate date of Easter for
 Anglicans between 1582 and 1752, you should use a reform_year of 1753, since
 the reform happened after Easter in 1752.
 
-~Date.easter~ return nil for any year before 30AD.
+- ~Date.easter(year, reform_year: 1582)~ :: return the date of Easter for the
+  given ~year~, assuming the given year of calendar reform; return nil for any
+  year before 30AD.
+- Date#easter_this_year :: return the date of Easter for the year in which
+  the subject Date falls.
+- Date#easter? :: return whether the subject Date is Easter.
 
 #+begin_src ruby
   require './lib/fat_date'
@@ -459,57 +476,85 @@ the reform happened after Easter in 1752.
 
 *** Date Specs
 It is often desirable to get the first or last date of a specified time
-period.  For this ~FatDate~ provides the ~parse_spec~ method that takes a
-string and an optional ~spec_type~ parameter of either ~:from~, indicating
-that the first date of the period should be returned or ~:to~, indicating that
-the last date of the period should be returned.
+period.  For this ~FatDate~ provides the ~spec~ method that takes a string and
+an optional ~spec_type~ parameter of either ~:from~, indicating that the first
+date of the period should be returned or ~:to~, indicating that the last date
+of the period should be returned.  It assumes the ~spec_type~ to be ~:from~ by
+default.
 
-This method supports a rich set of ways to specify periods of time.  The
-following section catalog them all.
+Though many specs, other than those specifying a single day, represent a
+period of time longer than one date, the ~Date.spec~ method returns a single
+date, either the first or last day of the period described by the spec.  See
+the library ~FatPeriod~ where the ~Date.spec~ method is put to good use in
+defining a ~Period~ type to represent ranges of time.
 
-**** Year and Month Based
+The ~spec~ method supports a rich set of ways to specify periods of time.  The
+following sections catalog them all.
 
-- YYYY-MM-DD :: returns a single day as the time period,
-- YYYY-MM :: returns the specified month, beginning or end
-- YYYY :: returns the specified year, beginning or end
-- MM :: returns the specified month of the current year, beginning or end
+**** Given Day
+- YYYY-MM-DD :: returns a single day given.
 - MM-DD :: returns the specified day of the specified month in the current
-  year, beginning or end,
+  year.
 
 **** Day-of-Year
-- YYYY-ddd :: returns the ddd'th day of the specified year, beginning or end,
-  exactly three digits are needed,
+- YYYY-ddd :: returns the ddd'th day of the specified year. Note that exactly
+  three digits are needed: with only two digits it would be interpreted as a
+  month.
+- ddd :: returns the ddd'th day of the current year. Again, note that
+  exactly three digits are needed: two digits would be interpreted as a month,
+  and four digits as a year.
 
-**** Weeks-of-Year
-- YYYY-Wnn or YYYY-nnW :: returns the nn'th commercial week of the given year
-  according to the ISO 8601 standard, in which the week containing the first
-  Thursday of the year counts as the first commercial week, even if that week
-  started in the prior calendar year,
-- Wnn or nnW :: returns the nn'th commercial week of the current year,
+**** Month
+The following return the first or last day of the given month.
 
-**** Halves and Quarters
-- YYYY-1H or YYYY-2H :: returns the specified half year for the given year,
-- 1H or 2H :: returns the specified half year for the current year,
-- YYYY-1Q, YYYY-2Q, etc  :: returns the calendar quarter for the given year,
-- 1Q, 2Q, etc  :: returns the calendar quarter for the current year,
+- YYYY-MM :: returns the first or last day of the specified month in the
+  specified year.
+- MM :: returns first or last day of the specified month of the current year.
+
+**** Year
+- YYYY :: returns the first or last day of the specified year.
+
+**** Commercial Weeks-of-Year
+- YYYY-Wnn or YYYY-nnW :: returns the first or last day of the nn'th
+  commercial week of the given year according to the ISO 8601 standard, in
+  which the week containing the first Thursday of the year counts as the first
+  commercial week, even if that week started in the prior calendar year,
+- Wnn or nnW :: returns the first or last day of the nn'th commercial week of
+  the current year,
+
+**** Halves
+- YYYY-1H or YYYY-2H :: returns the first or last day of the specified half
+  year for the given year,
+- 1H or 2H :: returns the first or last day of the specified half year for the
+  current year,
+
+**** Quarters
+- YYYY-1Q, YYYY-2Q, etc  :: returns the first or last day of the calendar
+  quarter for the given year,
+- 1Q, 2Q, etc  :: returns the first or last day of the calendar quarter for
+  the current year,
 
 **** Semi-Months
-
-- YYYY-MM-I or YYYY-MM-II :: returns the semi-month for the given month and
-  year, where the first semi-month always runs from the 1st to the 15th and
-  the second semi-month always runs from the 16th to the last day of the given
-  month, regardless of the number of days in the month,
+- YYYY-MM-A or YYYY-MM-B :: returns the first or last day of the semi-month
+  for the given month and year, where the first semi-month always runs from
+  the 1st to the 15th and the second semi-month always runs from the 16th to
+  the last day of the given month, regardless of the number of days in the
+  month.
+- MM-A or MM-B :: returns the first or last day of the semi-month of the
+  current year.
+- A or B :: returns the first or last day of the semi-month of the current
+  year and month.
 
 **** Week-of-Month
-- YYYY-MM-i or YYYY-MM-ii up to YYYY-MM-vi :: returns the given week within
-  the month, including any partial weeks,
-- MM-i or MM-ii up to MM-vi :: returns the given week within the month of the
-  current year, including any partial weeks,
-- i or ii up to vi :: returns the given week within the current month of the current
-  year, including any partial weeks,
+- YYYY-MM-i or YYYY-MM-ii up to YYYY-MM-vi :: returns the first or last day of
+  the given week within the month, including any partial weeks,
+- MM-i or MM-ii up to MM-vi :: returns the first or last day of the given week
+  within the month of the current year, including any partial weeks,
+- i or ii up to vi :: returns the first or last day of the given week within
+  the current month of the current year, including any partial weeks,
 
 **** Day-of-Week
-- YYYY-MM-nSu up to YYYY-MM-nSa  :: returns the single date that is the n'th
+- YYYY-MM-nSu up to YYYY-MM-nSa  :: returns the single day that is the n'th
   Sunday, Monday, etc., in the given month using the first two letters of the
   English names for the days of the week,
 - MM-nSu up to MM-nSa or MM-nSun up to MM-nSat :: returns the single date that
@@ -561,21 +606,21 @@ the spec:
 - '>=Su', '>=Mo', ... '>=Sa' :: change to the first Sunday, Monday, etc., /on
   or after/ the date the spec resolves to.
 
-For example, ~Date.parse_spec('2024<=Tu', :to)~ resolves to the last Tuesday
-of 2024, which happens to be December 31, 2024; ~Date.parse_spec('2024<Tu',
+For example, ~Date.spec('2024<=Tu', :to)~ resolves to the last Tuesday
+of 2024, which happens to be December 31, 2024; ~Date.spec('2024<Tu',
 :to)~, on the other hand would resolve to December 24, 2024, since it looks
 for the first Tuesday strictly /before/ December 31, 2024.
 
 **** Conventions
-Some things to note with respect to ~Date.parse_spec~:
+Some things to note with respect to ~Date.spec~:
 
 1. The second argument can be either ~:from~ or ~:to~, but it defaults to
-   ~:from~.  If it is ~:from~, ~parse_spec~ returns the first date of the
+   ~:from~.  If it is ~:from~, ~spec~ returns the first date of the
    specified period; if it is ~:to~, it returns the last date of the specified
    period.  When the "period" resolves to a single day, both arguments return
-   the same date, so ~parse_spec('2024-E', :from)~ and ~parse_spec('2024-E',
+   the same date, so ~spec('2024-E', :from)~ and ~spec('2024-E',
    :to)~ both result in March 31, 2024.
-2. Where relevant, ~parse_spec~ accepts letters of either upper or lower case:
+2. Where relevant, ~spec~ accepts letters of either upper or lower case:
    so 2024-1Q can be written 2024-1q and 'yesteryear' can be written
    'YeSterYeaR', and likewise for all components of the spec using letters.
 3. Date components can be separated with either a hyphen, as in the examples
@@ -593,7 +638,8 @@ Some things to note with respect to ~Date.parse_spec~:
 **** Examples
 
 #+begin_src ruby results :value
-  require './lib/fat_core/date'
+  require './lib/fat_date'
+
   strs = ['today', '2024-07-04', '2024-05', '2024', '2024-333',
          '08', '08-12', '2024-W36', '2024-36W', 'W36', '36W',
          '2024-1H', '2024-2H', '1H', '2H',
@@ -608,18 +654,18 @@ Some things to note with respect to ~Date.parse_spec~:
          '2025-E+50>=Su'
          ]
   tab = []
-  tab << ['Input', 'From', 'To']
+  tab << ['Spec', 'From', 'To']
   tab << nil
   strs.each do |s|
-    tab << ["'#{s}'", Date.parse_spec(s, :from).org, Date.parse_spec(s, :to).org]
+    tab << ["'#{s}'", Date.spec(s, :from).org, Date.spec(s, :to).org]
   end
   tab
 #+end_src
 
-#+RESULTS:
-| Input           | From             | To               |
+#+begin_example
+| Spec            | From             | To               |
 |-----------------+------------------+------------------|
-| 'today'         | [2025-10-12 Sun] | [2025-10-12 Sun] |
+| 'today'         | [2025-10-16 Thu] | [2025-10-16 Thu] |
 | '2024-07-04'    | [2024-07-04 Thu] | [2024-07-04 Thu] |
 | '2024-05'       | [2024-05-01 Wed] | [2024-05-31 Fri] |
 | '2024'          | [2024-01-01 Mon] | [2024-12-31 Tue] |
@@ -663,6 +709,7 @@ Some things to note with respect to ~Date.parse_spec~:
 | '2012-E+10'     | [2012-04-18 Wed] | [2012-04-18 Wed] |
 | '2024-E+40'     | [2024-05-10 Fri] | [2024-05-10 Fri] |
 | '2025-E+50>=Su' | [2025-06-15 Sun] | [2025-06-15 Sun] |
+#+end_example
 
 * Contributing
 
