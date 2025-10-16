@@ -386,16 +386,6 @@ module FatDate
       (start_date..end_date).cover?(self)
     end
 
-    # Return whether this date is Easter Sunday for the year in which it falls
-    # according to the Western Church.  A few holidays key off this date as
-    # "moveable feasts."
-    #
-    # @return [Boolean]
-    def easter?
-      # Am I Easter?
-      self == easter_this_year
-    end
-
     # Return whether this date is the `n`th weekday `wday` of the given `month` in
     # this date's year.
     #
@@ -916,13 +906,22 @@ module FatDate
       !weekend?
     end
 
-    # Return the date for Easter in the Western Church for the year in which this
-    # date falls.
+    # Return the date for Easter in the Western Church for the year in which
+    # this date falls.  A few holidays key off this date as "moveable feasts."
     #
     # @return [::Date]
-    def easter_this_year
+    def easter_this_year(reform_year: 1582)
       # Return the date of Easter in self's year
-      ::Date.easter(year)
+      ::Date.easter(year, reform_year: reform_year)
+    end
+
+    # Return whether this date is Easter Sunday for the year in which it falls
+    # according to the Western Church.
+    #
+    # @return [Boolean]
+    def easter?(reform_year: 1582)
+      # Am I Easter?
+      self == easter_this_year(reform_year: reform_year)
     end
 
     # Holidays decreed by Presidential proclamation
