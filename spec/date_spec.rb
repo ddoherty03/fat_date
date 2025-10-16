@@ -432,6 +432,18 @@ RSpec.describe Date do
         expect(Date.spec('2010-05-A', :from)).to eq Date.parse('2010-05-01')
         expect(Date.spec('2010-05-A', :to)).to eq Date.parse('2010-05-15')
 
+        travel_to Time.local(2010, 9, 15)
+        expect(Date.spec('09-A', :from)).to eq Date.parse('2010-09-01')
+        expect(Date.spec('09-A', :to)).to eq Date.parse('2010-09-15')
+        expect(Date.spec('09-B', :from)).to eq Date.parse('2010-09-16')
+        expect(Date.spec('09-B', :to)).to eq Date.parse('2010-09-30')
+        expect(Date.spec('05-A', :from)).to eq Date.parse('2010-05-01')
+        expect(Date.spec('05-A', :to)).to eq Date.parse('2010-05-15')
+
+        expect(Date.spec('A', :from)).to eq Date.parse('2010-09-01')
+        expect(Date.spec('A', :to)).to eq Date.parse('2010-09-15')
+        expect(Date.spec('B', :from)).to eq Date.parse('2010-09-16')
+        expect(Date.spec('B', :to)).to eq Date.parse('2010-09-30')
       end
 
       it 'parses intra-month week specs such as YYYY-MM-i and YYYY-MM-v begin Sunday' do
