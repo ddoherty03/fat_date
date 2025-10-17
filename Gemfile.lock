@@ -25,10 +25,14 @@ GEM
     base64 (0.3.0)
     benchmark (0.4.1)
     bigdecimal (3.3.1)
+    coderay (1.1.3)
     concurrent-ruby (1.3.5)
     connection_pool (2.5.4)
     damerau-levenshtein (1.3.3)
     date (3.4.1)
+    debug (1.11.0)
+      irb (~> 1.10)
+      reline (>= 0.3.8)
     diff-lcs (1.6.2)
     drb (2.2.3)
     erb (5.0.3)
@@ -48,6 +52,7 @@ GEM
     language_server-protocol (3.17.0.5)
     lint_roller (1.1.0)
     logger (1.7.0)
+    method_source (1.1.0)
     minitest (5.26.0)
     ostruct (0.6.3)
     parallel (1.27.0)
@@ -58,6 +63,9 @@ GEM
       prettyprint
     prettyprint (0.2.0)
     prism (1.5.2)
+    pry (0.15.2)
+      coderay (~> 1.1)
+      method_source (~> 1.0)
     psych (5.2.6)
       date
       stringio
@@ -114,8 +122,10 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
+  debug
   fat_date!
   irb
+  pry
   rake (~> 13.0)
   rspec (~> 3.0)
   rubocop (~> 1.21)
