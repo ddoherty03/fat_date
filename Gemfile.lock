@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    fat_date (0.1.0)
+    fat_date (0.1.1)
       activesupport
       fat_core
 
