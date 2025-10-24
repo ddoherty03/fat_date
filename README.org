@@ -1,9 +1,10 @@
 #+TITLE: FatDate Guide
 #+OPTIONS: toc:5
-#+PROPERTY: header-args:ruby :colnames no :hlines yes :exports both :wrap example :ruby ruby
+#+PROPERTY: header-args:ruby :colnames no :session fatdate :hlines yes :exports both :wrap example :ruby "bundle exec irb --prompt=simple"
 #+PROPERTY: header-args:sh :exports code
 
-[[https://travis-ci.org/ddoherty03/fat_core.svg?branch=master]]
+
+[[https://github.com/ddoherty03/fat_core/actions/workflows/ruby.yml][https://github.com/ddoherty03/fat_date/actions/workflows/ruby.yml/badge.svg?branch=master]]
 
 * README Setup Do First for Code Blocks                            :noexport:
 Run this block before all others to ensure that we are reading the libraries
@@ -12,34 +13,77 @@ from the source directory.
 #+begin_src ruby :results output :export no
   puts "Current directory: #{Dir.pwd}"
   puts "Ruby LOADPATH:"
-  $:.unshift("./lib") unless $:[0] == './lib'
+  $LOAD_PATH.unshift(File.expand_path("lib", Dir.pwd)) unless $:[0].match?(%r{src/fat_date/lib})
   $:[0..10].each { |d| puts d }
   puts "..."
-  require 'fat_date'  # => true
+  require 'fat_date'
 #+end_src
 
-#+RESULTS:
 #+begin_example
 Current directory: /home/ded/src/fat_date
 Ruby LOADPATH:
-./lib
+/home/ded/src/fat_date/lib
 /home/ded/.rbenv/rbenv.d/exec/gem-rehash
-/home/ded/.rbenv/versions/3.4.1/lib/ruby/site_ruby/3.4.0
-/home/ded/.rbenv/versions/3.4.1/lib/ruby/site_ruby/3.4.0/x86_64-linux
-/home/ded/.rbenv/versions/3.4.1/lib/ruby/site_ruby
-/home/ded/.rbenv/versions/3.4.1/lib/ruby/vendor_ruby/3.4.0
-/home/ded/.rbenv/versions/3.4.1/lib/ruby/vendor_ruby/3.4.0/x86_64-linux
-/home/ded/.rbenv/versions/3.4.1/lib/ruby/vendor_ruby
-/home/ded/.rbenv/versions/3.4.1/lib/ruby/3.4.0
-/home/ded/.rbenv/versions/3.4.1/lib/ruby/3.4.0/x86_64-linux
+/home/ded/.rbenv/versions/3.4.1/lib/ruby/gems/3.4.0/gems/rubocop-1.81.1/lib
+/home/ded/.rbenv/versions/3.4.1/lib/ruby/gems/3.4.0/gems/unicode-display_width-3.2.0/lib
+/home/ded/.rbenv/versions/3.4.1/lib/ruby/gems/3.4.0/gems/unicode-emoji-4.1.0/lib
+/home/ded/.rbenv/versions/3.4.1/lib/ruby/gems/3.4.0/gems/ruby-progressbar-1.13.0/lib
+/home/ded/.rbenv/versions/3.4.1/lib/ruby/gems/3.4.0/gems/rubocop-ast-1.47.1/lib
+/home/ded/.rbenv/versions/3.4.1/lib/ruby/gems/3.4.0/gems/rspec-3.13.1/lib
+/home/ded/.rbenv/versions/3.4.1/lib/ruby/gems/3.4.0/gems/rspec-mocks-3.13.5/lib
+/home/ded/.rbenv/versions/3.4.1/lib/ruby/gems/3.4.0/gems/rspec-expectations-3.13.5/lib
+/home/ded/.rbenv/versions/3.4.1/lib/ruby/gems/3.4.0/gems/rspec-core-3.13.5/lib
 ...
 #+end_example
 
+* Table of Contents                                                     :toc:
+- [[#fatdate][FatDate]]
+- [[#version][Version]]
+- [[#installation][Installation]]
+- [[#usage][Usage]]
+    - [[#constants][Constants]]
+    - [[#ensure][Ensure]]
+    - [[#formatting][Formatting]]
+    - [[#chunks][Chunks]]
+    - [[#parsing-american-dates][Parsing American Dates]]
+    - [[#holidays-and-workdays][Holidays and Workdays]]
+      - [[#federal][Federal]]
+      - [[#nyse][NYSE]]
+    - [[#ordinal-weekdays-in-month][Ordinal Weekdays in Month]]
+    - [[#easter][Easter]]
+    - [[#date-specs][Date Specs]]
+      - [[#given-day][Given Day]]
+      - [[#day-of-year][Day-of-Year]]
+      - [[#month][Month]]
+      - [[#year][Year]]
+      - [[#commercial-weeks-of-year][Commercial Weeks-of-Year]]
+      - [[#halves][Halves]]
+      - [[#quarters][Quarters]]
+      - [[#semi-months][Semi-Months]]
+      - [[#week-of-month][Week-of-Month]]
+      - [[#day-of-week][Day-of-Week]]
+      - [[#easter-based][Easter Based]]
+      - [[#relative-dates][Relative Dates]]
+      - [[#extremes][Extremes]]
+      - [[#skip-modifiers][Skip Modifiers]]
+      - [[#conventions][Conventions]]
+      - [[#examples][Examples]]
+- [[#contributing][Contributing]]
 
 * FatDate
 
 ~fat_date~ is a simple gem to collect core extensions for the Date class to
 make it more useful in financial applications.
+
+* Version
+
+#+begin_src ruby :results output
+  puts "#{FatDate::VERSION}"
+#+end_src
+
+#+begin_example
+0.1.1
+#+end_example
 
 * Installation
 
@@ -87,9 +131,7 @@ a date argument but want the caller to be able to supply anything that can
 reasonably be converted to a ~Date~:
 
 #+begin_src ruby :results output
-  $:.unshift("~/src/fat_core/lib")
-  require 'fat_core/date'  # => true
-
+  # require 'fat_date'
   def tomorow_tomorrow(arg)
     from = Date.ensure(arg)  # => ArgumentError: cannot convert class 'Array' to a Date or DateTime
     from + 2.days            # => Mon, 03 Jun 2024, Wed, 16 Oct 2024 05:47:30 -0500, Sun, 03 Mar 2024
@@ -104,7 +146,7 @@ reasonably be converted to a ~Date~:
 
 #+begin_example
 2025-06-03
-2025-10-18T04:54:44-05:00
+2025-10-26T15:42:14-05:00
 2025-03-03
 #+end_example
 
@@ -113,7 +155,6 @@ reasonably be converted to a ~Date~:
 that are often useful:
 
 #+begin_SRC ruby :results output
-  require_relative './lib/fat_date'
   d = Date.parse('1957-09-22')
   puts "ISO: #{d.iso}"
   puts "All Numbers: #{d.num}"
@@ -133,6 +174,7 @@ LaTeX: 1957--09--22
 English: September 22, 1957
 American: 9/22/1957
 #+end_example
+
 
 Most of these are self-explanatory, but a couple are not.  The
 ~Date.org(active: false)~ method formats a date as an Emacs org-mode
@@ -163,8 +205,6 @@ as "chunks", and they are the following:
 or end of each of these chunks:
 
 #+begin_SRC ruby :results value
-  require_relative './lib/fat_date'
-
   tab = []
   tab << ['Subject Date', 'Method', 'Result']
   tab << nil
@@ -203,8 +243,6 @@ It also provides corresponding methods that return the date at the beginning
 or end of the calendar chunk, starting at the given date:
 
 #+begin_SRC ruby
-  require './lib/fat_date'
-
   tab = []
   tab << ['Subject Date', 'Method', 'Result']
   tab << nil
@@ -239,11 +277,10 @@ or end of the calendar chunk, starting at the given date:
 | 2017-04-21   | d.end_of_week            | 2017-04-23 |
 #+end_example
 
+
 You can query which numerical half, quarter, etc. that a given date falls in:
 
 #+begin_SRC ruby
-  require './lib/fat_date'
-
   tab = []
   tab << ['Subject Date', 'Method', 'Result']
   tab << nil
@@ -258,14 +295,14 @@ You can query which numerical half, quarter, etc. that a given date falls in:
 #+begin_example
 | Subject Date | Method      | Result                 |
 |--------------+-------------+------------------------|
-| 2017-07-26   | d.year      | in year number 2017    |
-| 2017-06-01   | d.half      | in half number 1       |
-| 2017-07-08   | d.quarter   | in quarter number 3    |
-| 2017-04-30   | d.bimonth   | in bimonth number 2    |
-| 2017-05-01   | d.month     | in month number 5      |
-| 2017-05-18   | d.semimonth | in semimonth number 10 |
-| 2017-05-21   | d.biweek    | in biweek number 10    |
-| 2017-07-01   | d.week      | in week number 26      |
+| 2017-07-29   | d.year      | in year number 2017    |
+| 2017-06-10   | d.half      | in half number 1       |
+| 2017-07-17   | d.quarter   | in quarter number 3    |
+| 2017-06-03   | d.bimonth   | in bimonth number 3    |
+| 2017-06-28   | d.month     | in month number 6      |
+| 2017-06-18   | d.semimonth | in semimonth number 12 |
+| 2017-05-17   | d.biweek    | in biweek number 10    |
+| 2017-07-08   | d.week      | in week number 27      |
 #+end_example
 
 *** Parsing American Dates
@@ -275,8 +312,6 @@ will parse such a string as d/M/Y, often resulting in invalid date errors.
 such strings.
 
 #+begin_SRC ruby :results output
-  require './lib/fat_date'
-
   begin
     ss = '9/22/1957'
     Date.parse(ss)
@@ -320,9 +355,6 @@ Methods concerning Federal holidays:
   we hit a Federal workday
 
 #+begin_SRC ruby
-  require './lib/fat_date'
-
-
   result = []
   result << ['Date', 'Federal Holiday?', 'Comment']
   result << nil
@@ -356,8 +388,6 @@ And we have similar methods for "holidays" or non-trading days on the NYSE:
 Likewise, days on which the NYSE is closed can be gotten with:
 
 #+begin_SRC ruby :results output
-  require './lib/fat_date'
-
   puts Date.parse('2014-04-18').nyse_holiday?
 #+end_SRC
 
@@ -366,8 +396,6 @@ true
 #+end_example
 
 #+begin_SRC ruby :results value
-  require './lib/fat_date'
-
   date_comments = [
     ['2014-04-18', 'Good Friday'],
     ['2014-05-18', 'Weekend'],
@@ -400,8 +428,6 @@ wday, year, month)~ to return such dates.  The first parameter can be
 negative, which will count from the end of the month.
 
 #+begin_src ruby
-  require './lib/fat_date'
-
   results = []
   results << ['n', 'Year', 'Month', 'nth Thursday']
   results << nil
@@ -448,8 +474,6 @@ the reform happened after Easter in 1752.
 - Date#easter? :: return whether the subject Date is Easter.
 
 #+begin_src ruby
-  require './lib/fat_date'
-
   yrs = [800, 1000, 1200, 1400, 1500, 1600, 1800, 2000]
   result = []
   result << ['Year', 'Easter Date']
@@ -472,7 +496,6 @@ the reform happened after Easter in 1752.
 | 1800 | [1800-04-13 Sun] |
 | 2000 | [2000-04-23 Sun] |
 #+end_example
-
 
 *** Date Specs
 It is often desirable to get the first or last date of a specified time
@@ -636,10 +659,9 @@ Some things to note with respect to ~Date.spec~:
 6. 'fortnight' is a synonym for a biweek.
 
 **** Examples
+The following examples demonstrate all of the date specs available.
 
 #+begin_src ruby results :value
-  require './lib/fat_date'
-
   strs = ['today', '2024-07-04', '2024-05', '2024', '2024-333',
          '08', '08-12', '2024-W36', '2024-36W', 'W36', '36W',
          '2024-1H', '2024-2H', '1H', '2H',
@@ -665,7 +687,7 @@ Some things to note with respect to ~Date.spec~:
 #+begin_example
 | Spec            | From             | To               |
 |-----------------+------------------+------------------|
-| 'today'         | [2025-10-16 Thu] | [2025-10-16 Thu] |
+| 'today'         | [2025-10-24 Fri] | [2025-10-24 Fri] |
 | '2024-07-04'    | [2024-07-04 Thu] | [2024-07-04 Thu] |
 | '2024-05'       | [2024-05-01 Wed] | [2024-05-31 Fri] |
 | '2024'          | [2024-01-01 Mon] | [2024-12-31 Tue] |
@@ -710,6 +732,7 @@ Some things to note with respect to ~Date.spec~:
 | '2024-E+40'     | [2024-05-10 Fri] | [2024-05-10 Fri] |
 | '2025-E+50>=Su' | [2025-06-15 Sun] | [2025-06-15 Sun] |
 #+end_example
+
 
 * Contributing
 
