@@ -1,0 +1,46 @@
+#! /usr/bin/env ruby
+
+# frozen_string_literal: true
+
+require "debug"
+require 'fat_date'
+
+usage = <<~HELP
+  USAGE:
+     easter             -- print the date of Easter for the current year
+     easter year        -- print the date of Easter for the given year
+     easter year1 year2 -- print the dates of Easter from year1 to year2
+
+  Note: if the date of Easter is the earliest possible, it is marked with a '<';
+        if it is the latest date possible, it is marked with a '>'
+HELP
+first, last = *ARGV
+first ||= Date.today.year
+last ||= Date.today.year
+
+if first.to_s.match?(/--help|-h/)
+  puts usage
+  exit(1)
+end
+
+begin
+  first = Integer(first)
+  last = Integer(last)
+rescue ArgumentError
+  warn "!!Error: invalid year number given\n\n"
+  puts usage
+  exit(2)
+end
+
+(first..last).each do |yr|
+  easter = Date.easter(yr)
+  sig =
+    if easter.month == 4 && easter.day >= 25
+      ' >'
+    elsif easter.month == 3 && easter.day <= 22
+      ' <'
+    else
+      ''
+    end
+  puts "Easter #{yr}: #{easter.iso}#{sig}"
+end
