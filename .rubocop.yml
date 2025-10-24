@@ -1,9 +1,3 @@
-inherit_from:
-  - ~/.rubocop.yml
-
-AllCops:
-  NewCops: enable
-  TargetRubyVersion: 3.0
-
-Style/BitwisePredicate:
-   Enabled: false
+# Inherit the shared config from the rubocop-ddoherty gem (git-hosted on GitHub)
+inherit_gem:
+  rubocop-ddoherty: 'config/default.yml'
