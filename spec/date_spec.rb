@@ -1,4 +1,5 @@
 # coding: utf-8
+# frozen_string_literal: true
 
 RSpec.describe Date do
   before do
@@ -15,8 +16,8 @@ RSpec.describe Date do
 
   describe 'class methods' do
     it 'defines constants' do
-      expect(Date::BOT).to be_a_kind_of Date
-      expect(Date::EOT).to be_a_kind_of Date
+      expect(Date::BOT).to be_a Date
+      expect(Date::EOT).to be_a Date
     end
 
     describe 'ensure_date parsing' do
