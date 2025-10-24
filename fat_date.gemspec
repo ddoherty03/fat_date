@@ -38,7 +38,6 @@ Gem::Specification.new do |spec|
 
   # Uncomment to register a new dependency of your gem
   # spec.add_dependency "example-gem", "~> 1.0"
-  spec.add_dependency 'rubocop-ddoherty'
   spec.add_dependency 'activesupport'
   spec.add_dependency 'fat_core'
 
