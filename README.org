@@ -4,9 +4,11 @@
 #+PROPERTY: header-args:sh :exports code
 
 
-[[https://github.com/ddoherty03/fat_core/actions/workflows/ruby.yml][https://github.com/ddoherty03/fat_date/actions/workflows/ruby.yml/badge.svg?branch=master]]
+[[https://github.com/ddoherty03/fat_date/actions/workflows/ruby.yml][https://github.com/ddoherty03/fat_date/actions/workflows/ruby.yml/badge.svg?branch=master]]
 
-* README Setup Do First for Code Blocks                            :noexport:
+#+BEGIN_COMMENT
+
+* Setup for Code Blocks                            :noexport:
 Run this block before all others to ensure that we are reading the libraries
 from the source directory.
 
@@ -19,6 +21,7 @@ from the source directory.
   require 'fat_date'
 #+end_src
 
+#+RESULTS:
 #+begin_example
 Current directory: /home/ded/src/fat_date
 Ruby LOADPATH:
@@ -35,6 +38,8 @@ Ruby LOADPATH:
 /home/ded/.rbenv/versions/3.4.1/lib/ruby/gems/3.4.0/gems/rspec-core-3.13.5/lib
 ...
 #+end_example
+
+#+END_COMMENT
 
 * Table of Contents                                                     :toc:
 - [[#fatdate][FatDate]]
