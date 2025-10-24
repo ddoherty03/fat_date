@@ -1,8 +1,5 @@
 # coding: utf-8
 
-require 'spec_helper'
-require 'fat_date/date'
-
 RSpec.describe Date do
   before do
     # Pretend it is this date. Not at beg or end of year, quarter,
@@ -17,6 +14,11 @@ RSpec.describe Date do
   end
 
   describe 'class methods' do
+    it 'defines constants' do
+      expect(Date::BOT).to be_a_kind_of Date
+      expect(Date::EOT).to be_a_kind_of Date
+    end
+
     describe 'ensure_date parsing' do
       it 'parses a String as a date' do
         expect(Date.ensure_date('2018-11-12').class).to be Date
