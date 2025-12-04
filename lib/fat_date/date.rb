@@ -2011,7 +2011,7 @@ module FatDate
       #
       # @param dat [String, Date, Time] the object to be converted to Date
       # @return [Date, DateTime]
-      def ensure_date(dat)
+      def ensure(dat)
         if dat.is_a?(Date) || dat.is_a?(DateTime)
           dat
         elsif dat.is_a?(Time)
@@ -2030,22 +2030,19 @@ module FatDate
           raise ArgumentError, "cannot convert class '#{dat.class}' to a Date or DateTime"
         end
       end
+
+      alias_method :ensure_date, :ensure
     end
 
+    # Extend the Date class methods with the FatDate::ClassMethods methods
+    # when this module is included.
     def self.included(base)
       base.extend(ClassMethods)
     end
   end
 end
 
-# Include the FatDate methods in Date and extend the Date class methods with
-# the FatDate::ClassMethods methods.
+# Include the FatDate methods in Date.
 class Date
   include FatDate::Date
-
-  def self.ensure(dat)
-    ensure_date(dat)
-  end
-  # @!parse include FatDate::Date
-  # @!parse extend FatDate::Date::ClassMethods
 end

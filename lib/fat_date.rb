@@ -12,5 +12,4 @@ require 'fat_core/string'
 require_relative "fat_date/version"
 require_relative "fat_date/patches"
 require_relative "fat_date/date"
-
-require 'debug'
+require_relative "fat_date/datetime"
