@@ -1,5 +1,7 @@
-## [Unreleased]
 
-## [0.1.0] - 2025-10-13
+* Version 0.1.4
+- Add DateTime.iso to print time/zone components.
 
-- Initial release
+* [0.1.3] - 2025-10-13
+- Initial release splitting the Date methods out of fat_core into this
+  separate gem.
