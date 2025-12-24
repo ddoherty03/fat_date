@@ -1,4 +1,7 @@
 
+* Version 0.1.5
+- Add Trump declared holidays for 2025
+- Add date examples to README
 * Version 0.1.4
 - Add DateTime.iso to print time/zone components.
 

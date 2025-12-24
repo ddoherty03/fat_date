@@ -1,22 +1,22 @@
-- [Introduction](#org5409ea7)
-- [Version](#orga0e91c5)
-- [Installation](#org5f1dd2c)
-- [Usage](#org5370e37)
-    - [Constants](#orga3509b5)
-    - [Ensure](#org6982753)
-    - [Formatting](#orgf1df8b2)
-    - [Chunks](#orgbd46647)
-    - [Parsing American Dates](#org699b533)
-    - [Holidays and Workdays](#org156cfb2)
-    - [Ordinal Weekdays in Month](#orgb99874d)
-    - [Easter](#org16ce332)
-    - [Date Specs](#org90aeba3)
-- [Contributing](#org4b44d01)
+- [Introduction](#org2976912)
+- [Version](#orgb63e49e)
+- [Installation](#org6f9a1b2)
+- [Usage](#org3462274)
+    - [Constants](#orgefb7df8)
+    - [Ensure](#org7caec49)
+    - [Formatting](#org438cc20)
+    - [Chunks](#orga925e00)
+    - [Parsing American Dates](#org00d3562)
+    - [Holidays and Workdays](#org2f5f2f5)
+    - [Ordinal Weekdays in Month](#orgaf91d48)
+    - [Easter](#org19abe4c)
+    - [Date Specs](#orgd15a58e)
+- [Contributing](#org29c0c5b)
 
 [![CI](https://github.com/ddoherty03/fat_date/actions/workflows/ruby.yml/badge.svg?branch=master)](https://github.com/ddoherty03/fat_date/actions/workflows/ruby.yml)
 
 
-<a id="org5409ea7"></a>
+<a id="org2976912"></a>
 
 # Introduction
 
@@ -28,20 +28,20 @@
 -   parsing so-called "specs" that allow the beginning or ending `Date` of a larger period of time to be returned, a facility put to good use in the [FatPeriod](https://github.com/ddoherty03/fat_period) gem.
 
 
-<a id="orga0e91c5"></a>
+<a id="orgb63e49e"></a>
 
 # Version
 
 ```ruby
-"#{FatDate::VERSION}"
+FatDate::VERSION
 ```
 
 ```
-0.1.4
+0.1.5
 ```
 
 
-<a id="org5f1dd2c"></a>
+<a id="org6f9a1b2"></a>
 
 # Installation
 
@@ -64,14 +64,14 @@ $ gem install fat_date
 ```
 
 
-<a id="org5370e37"></a>
+<a id="org3462274"></a>
 
 # Usage
 
 Many of these have little that is of general interest, but there are a few goodies.
 
 
-<a id="orga3509b5"></a>
+<a id="orgefb7df8"></a>
 
 ### Constants
 
@@ -83,7 +83,7 @@ Many of these have little that is of general interest, but there are a few goodi
 -   **`Date::PRESIDENTIAL_FUNERALS`:** an Array of dates of presidential funerals, which are observed with a closing of most federal agencies
 
 
-<a id="org6982753"></a>
+<a id="org7caec49"></a>
 
 ### Ensure
 
@@ -109,7 +109,7 @@ If you give it a Time, it will return a `DateTime`
 ```
 
 ```
-[2025-12-24 05:12:00.897539094 -0600, Fri, 26 Dec 2025 05:12:00 -0600]
+[2025-12-24 05:35:23.78341956 -0600, Fri, 26 Dec 2025 05:35:23 -0600]
 ```
 
 But it's only as good as Date.parse! If all it sees is 'March', it returns March 1 of the current year.
@@ -123,7 +123,7 @@ tomorow_tomorrow('Ides of March').to_s
 ```
 
 
-<a id="orgf1df8b2"></a>
+<a id="org438cc20"></a>
 
 ### Formatting
 
@@ -158,7 +158,7 @@ Most of these are self-explanatory, but a couple are not. The `Date.org(active: 
 The `#tex_quote` method formats the date in iso form but using TeX's convention of using en-dashes to separate the components.
 
 
-<a id="orgbd46647"></a>
+<a id="orga925e00"></a>
 
 ### Chunks
 
@@ -263,20 +263,20 @@ tab
 ```
 
 ```
-| Subject Date | Method      | Result                |
-|--------------+-------------+-----------------------|
-| 2017-06-04   | d.year      | in year number 2017   |
-| 2017-05-01   | d.half      | in half number 1      |
-| 2017-05-03   | d.quarter   | in quarter number 2   |
-| 2017-04-29   | d.bimonth   | in bimonth number 2   |
-| 2017-06-14   | d.month     | in month number 6     |
-| 2017-04-29   | d.semimonth | in semimonth number 8 |
-| 2017-05-20   | d.biweek    | in biweek number 10   |
-| 2017-06-12   | d.week      | in week number 24     |
+| Subject Date | Method      | Result                 |
+|--------------+-------------+------------------------|
+| 2017-05-19   | d.year      | in year number 2017    |
+| 2017-06-17   | d.half      | in half number 1       |
+| 2017-06-06   | d.quarter   | in quarter number 2    |
+| 2017-07-01   | d.bimonth   | in bimonth number 4    |
+| 2017-07-20   | d.month     | in month number 7      |
+| 2017-06-07   | d.semimonth | in semimonth number 11 |
+| 2017-06-05   | d.biweek    | in biweek number 12    |
+| 2017-07-08   | d.week      | in week number 27      |
 ```
 
 
-<a id="org699b533"></a>
+<a id="org00d3562"></a>
 
 ### Parsing American Dates
 
@@ -293,7 +293,8 @@ end
 ```
 
 ```
-=> false
+LoadError: cannot load such file -- /home/ded/src/fat_date/lib/fat_date/datetime (LoadError)
+from /home/ded/src/fat_date/lib/fat_date.rb:32:in 'Kernel#require_relative'
 Date.parse('9/22/1957') raises Date::Error (invalid date), but
 Date.parse_american('9/22/1957') => 1957-09-22
 => nil
@@ -301,7 +302,7 @@ Date.parse_american('9/22/1957') => 1957-09-22
 ```
 
 
-<a id="org156cfb2"></a>
+<a id="org2f5f2f5"></a>
 
 ### Holidays and Workdays
 
@@ -409,7 +410,7 @@ Date.parse_american('9/22/1957') => 1957-09-22
     ```
 
 
-<a id="orgb99874d"></a>
+<a id="orgaf91d48"></a>
 
 ### Ordinal Weekdays in Month
 
@@ -444,7 +445,7 @@ results
 ```
 
 
-<a id="org16ce332"></a>
+<a id="org19abe4c"></a>
 
 ### Easter
 
@@ -479,7 +480,7 @@ result
 ```
 
 
-<a id="org90aeba3"></a>
+<a id="orgd15a58e"></a>
 
 ### Date Specs
 
@@ -674,7 +675,7 @@ The `spec` method supports a rich set of ways to specify periods of time. The fo
     ```
 
 
-<a id="org4b44d01"></a>
+<a id="org29c0c5b"></a>
 
 # Contributing
 

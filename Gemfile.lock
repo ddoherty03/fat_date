@@ -12,7 +12,7 @@ GIT
 PATH
   remote: .
   specs:
-    fat_date (0.1.4)
+    fat_date (0.1.5)
       activesupport
       fat_core
 
@@ -53,9 +53,9 @@ GEM
       damerau-levenshtein
       ostruct
       stringio (>= 3.1.2)
-    gem_docs (0.1.0)
+    gem_docs (0.1.2)
       rake
-      yard (~> 0.9)
+      yard
     i18n (1.14.7)
       concurrent-ruby (~> 1.0)
     io-console (0.8.1)
@@ -163,7 +163,7 @@ DEPENDENCIES
   bundler
   debug (>= 1.0.0)
   fat_date!
-  gem_docs
+  gem_docs (>= 0.1.2)
   irb
   pry
   pry-doc

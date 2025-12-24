@@ -28,12 +28,12 @@ in financial applications, including:
 * Version
 
 #+begin_src ruby
-  "#{FatDate::VERSION}"
+FatDate::VERSION
 #+end_src
 
 #+RESULTS:
 #+begin_example
-0.1.4
+0.1.5
 #+end_example
 
 * Installation
@@ -102,7 +102,7 @@ If you give it a Time, it will return a ~DateTime~
 
 #+RESULTS:
 #+begin_example
-[2025-12-24 05:12:00.897539094 -0600, Fri, 26 Dec 2025 05:12:00 -0600]
+[2025-12-24 05:35:23.78341956 -0600, Fri, 26 Dec 2025 05:35:23 -0600]
 #+end_example
 
 But it's only as good as Date.parse!  If all it sees is 'March', it returns
@@ -265,16 +265,16 @@ You can query which numerical half, quarter, etc. that a given date falls in:
 
 #+RESULTS:
 #+begin_example
-| Subject Date | Method      | Result                |
-|--------------+-------------+-----------------------|
-| 2017-06-04   | d.year      | in year number 2017   |
-| 2017-05-01   | d.half      | in half number 1      |
-| 2017-05-03   | d.quarter   | in quarter number 2   |
-| 2017-04-29   | d.bimonth   | in bimonth number 2   |
-| 2017-06-14   | d.month     | in month number 6     |
-| 2017-04-29   | d.semimonth | in semimonth number 8 |
-| 2017-05-20   | d.biweek    | in biweek number 10   |
-| 2017-06-12   | d.week      | in week number 24     |
+| Subject Date | Method      | Result                 |
+|--------------+-------------+------------------------|
+| 2017-05-19   | d.year      | in year number 2017    |
+| 2017-06-17   | d.half      | in half number 1       |
+| 2017-06-06   | d.quarter   | in quarter number 2    |
+| 2017-07-01   | d.bimonth   | in bimonth number 4    |
+| 2017-07-20   | d.month     | in month number 7      |
+| 2017-06-07   | d.semimonth | in semimonth number 11 |
+| 2017-06-05   | d.biweek    | in biweek number 12    |
+| 2017-07-08   | d.week      | in week number 27      |
 #+end_example
 
 *** Parsing American Dates
@@ -295,7 +295,8 @@ such strings.
 
 #+RESULTS:
 #+begin_example
-=> false
+LoadError: cannot load such file -- /home/ded/src/fat_date/lib/fat_date/datetime (LoadError)
+from /home/ded/src/fat_date/lib/fat_date.rb:32:in 'Kernel#require_relative'
 Date.parse('9/22/1957') raises Date::Error (invalid date), but
 Date.parse_american('9/22/1957') => 1957-09-22
 => nil

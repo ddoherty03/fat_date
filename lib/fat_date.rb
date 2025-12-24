@@ -26,11 +26,6 @@ require "active_support/core_ext/integer/time"
 
 require 'fat_core/string'
 
-require_relative "fat_date/version"
-require_relative "fat_date/patches"
-require_relative "fat_date/date"
-require_relative "fat_date/datetime"
-
 # Gem Overview (extracted from README.org by gem_docs)
 #
 # * Introduction
@@ -46,5 +41,9 @@ require_relative "fat_date/datetime"
 # - parsing so-called "specs" that allow the beginning or ending =Date= of a
 #   larger period of time to be returned, a facility put to good use in the
 #   [[https://github.com/ddoherty03/fat_period][FatPeriod]] gem.
-module FatDate
+module FatDatee
+  require_relative "fat_date/version"
+  require_relative "fat_date/patches"
+  require_relative "fat_date/date"
+  require_relative "fat_date/date_time"
 end
