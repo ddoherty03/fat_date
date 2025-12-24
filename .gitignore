@@ -7,3 +7,5 @@
 .rspec_status
 /.tangle-stamp
 /.yardoc/
+doc/
+/doc/
