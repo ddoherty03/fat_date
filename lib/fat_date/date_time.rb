@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module FatDate
   module DateTime
     # Format as an ISO string of the form `YYYY-MM-DD`.
