@@ -1,81 +1,16 @@
 #+TITLE: FatDate Guide
 #+OPTIONS: toc:5
-#+PROPERTY: header-args:ruby :colnames no :session fatdate :hlines yes :exports both :wrap example :ruby "bundle exec irb --prompt=simple"
-#+PROPERTY: header-args:sh :exports code
+#+PROPERTY: header-args:ruby :results value :colnames no :hlines yes :exports both :dir "./"
+#+PROPERTY: header-args:ruby+ :wrap example :session fat_date_session :eval yes
+#+PROPERTY: header-args:ruby+ :prologue "$:.unshift('./lib') unless $:.first == './lib'; require 'fat_date'"
+#+PROPERTY: header-args:sh :exports code :eval no
+#+PROPERTY: header-args:bash :exports code :eval no
 
+#+BEGIN_EXPORT markdown
+[![CI](https://github.com/ddoherty03/fat_date/actions/workflows/ruby.yml/badge.svg?branch=master)](https://github.com/ddoherty03/fat_date/actions/workflows/ruby.yml)
+#+END_EXPORT
 
-[[https://github.com/ddoherty03/fat_date/actions/workflows/ruby.yml][https://github.com/ddoherty03/fat_date/actions/workflows/ruby.yml/badge.svg?branch=master]]
-
-,#+BEGIN_COMMENT
-
-* Setup for Code Blocks                            :noexport:
-Run this block before all others to ensure that we are reading the libraries
-from the source directory.
-
-#+begin_src ruby :results output :export no
-  puts "Current directory: #{Dir.pwd}"
-  puts "Ruby LOADPATH:"
-  $LOAD_PATH.unshift(File.expand_path("lib", Dir.pwd)) unless $:[0].match?(%r{src/fat_date/lib})
-  $:[0..10].each { |d| puts d }
-  puts "..."
-  require 'fat_date'
-#+end_src
-
-#+RESULTS:
-#+begin_example
-Current directory: /home/ded/src/fat_date
-Ruby LOADPATH:
-/home/ded/src/fat_date/lib
-/home/ded/.rbenv/versions/3.4.1/lib/ruby/gems/3.4.0/gems/bundler-2.6.7/lib
-/home/ded/.rbenv/rbenv.d/exec/gem-rehash
-/home/ded/.rbenv/versions/3.4.1/lib/ruby/gems/3.4.0/gems/simplecov-0.22.0/lib
-/home/ded/.rbenv/versions/3.4.1/lib/ruby/gems/3.4.0/gems/simplecov_json_formatter-0.1.4/lib
-/home/ded/.rbenv/versions/3.4.1/lib/ruby/gems/3.4.0/gems/simplecov-html-0.13.2/lib
-/home/ded/.rbenv/versions/3.4.1/lib/ruby/gems/3.4.0/bundler/gems/rubocop-ddoherty-6b28e9614f18/lib
-/home/ded/.rbenv/versions/3.4.1/lib/ruby/gems/3.4.0/gems/rubocop-shopify-2.17.1/lib
-/home/ded/.rbenv/versions/3.4.1/lib/ruby/gems/3.4.0/gems/rubocop-rspec-3.7.0/lib
-/home/ded/.rbenv/versions/3.4.1/lib/ruby/gems/3.4.0/gems/rubocop-rake-0.7.1/lib
-/home/ded/.rbenv/versions/3.4.1/lib/ruby/gems/3.4.0/gems/rubocop-performance-1.26.1/lib
-...
-#+end_example
-
-,#+END_COMMENT
-
-* Table of Contents                                                     :toc:
-- [[#fatdate][FatDate]]
-- [[#version][Version]]
-- [[#installation][Installation]]
-- [[#usage][Usage]]
-    - [[#constants][Constants]]
-    - [[#ensure][Ensure]]
-    - [[#formatting][Formatting]]
-    - [[#chunks][Chunks]]
-    - [[#parsing-american-dates][Parsing American Dates]]
-    - [[#holidays-and-workdays][Holidays and Workdays]]
-      - [[#federal][Federal]]
-      - [[#nyse][NYSE]]
-    - [[#ordinal-weekdays-in-month][Ordinal Weekdays in Month]]
-    - [[#easter][Easter]]
-    - [[#date-specs][Date Specs]]
-      - [[#given-day][Given Day]]
-      - [[#day-of-year][Day-of-Year]]
-      - [[#month][Month]]
-      - [[#year][Year]]
-      - [[#commercial-weeks-of-year][Commercial Weeks-of-Year]]
-      - [[#halves][Halves]]
-      - [[#quarters][Quarters]]
-      - [[#semi-months][Semi-Months]]
-      - [[#week-of-month][Week-of-Month]]
-      - [[#day-of-week][Day-of-Week]]
-      - [[#easter-based][Easter Based]]
-      - [[#relative-dates][Relative Dates]]
-      - [[#extremes][Extremes]]
-      - [[#skip-modifiers][Skip Modifiers]]
-      - [[#conventions][Conventions]]
-      - [[#examples][Examples]]
-- [[#contributing][Contributing]]
-
-* FatDate
+* Introduction
 ~fat_date~ collects core extensions for the Date class to make it more useful
 in financial applications, including:
 
@@ -92,32 +27,32 @@ in financial applications, including:
 
 * Version
 
-#+begin_src ruby :results output
-  puts "#{FatDate::VERSION}"
+#+begin_src ruby
+  "#{FatDate::VERSION}"
 #+end_src
 
+#+RESULTS:
 #+begin_example
-0.1.3
+0.1.4
 #+end_example
-
 
 * Installation
 
 Add this line to your application's Gemfile:
 
-#+begin_SRC ruby
+#+begin_SRC ruby :eval no
   gem 'fat_date', :git => 'https://github.com/ddoherty03/fat_date.git'
 #+end_SRC
 
 And then execute:
 
-#+begin_src shell
+#+begin_src sh
   $ bundle
 #+end_src
 
 Or install it yourself as:
 
-#+begin_src shell
+#+begin_src sh
   $ gem install fat_date
 #+end_src
 
@@ -146,23 +81,39 @@ method to a String.  This is handy when you want to define a method that takes
 a date argument but want the caller to be able to supply anything that can
 reasonably be converted to a ~Date~:
 
-#+begin_src ruby :results output
-  # require 'fat_date'
+#+begin_src ruby :results value raw
   def tomorow_tomorrow(arg)
     from = Date.ensure(arg)  # => ArgumentError: cannot convert class 'Array' to a Date or DateTime
     from + 2.days            # => Mon, 03 Jun 2024, Wed, 16 Oct 2024 05:47:30 -0500, Sun, 03 Mar 2024
   end                        # => :tomorow_tomorrow
 
-  puts tomorow_tomorrow('June 1').to_s
-  puts tomorow_tomorrow(Time.now).to_s
-  # But it's only as good as Date.parse!  If all it sees is 'March', it returns
-  # March 1 of the current year.
-  puts tomorow_tomorrow('Ides of March').to_s
+  tomorow_tomorrow('June 1').to_s
 #+end_src
 
+#+RESULTS:
 #+begin_example
 2025-06-03
-2025-10-26T15:42:14-05:00
+#+end_example
+
+If you give it a Time, it will return a ~DateTime~
+#+begin_src ruby :results value raw
+  [Time.now, tomorow_tomorrow(Time.now)]
+#+end_src
+
+#+RESULTS:
+#+begin_example
+[2025-12-24 05:12:00.897539094 -0600, Fri, 26 Dec 2025 05:12:00 -0600]
+#+end_example
+
+But it's only as good as Date.parse!  If all it sees is 'March', it returns
+March 1 of the current year.
+
+#+begin_src ruby :results value raw
+  tomorow_tomorrow('Ides of March').to_s
+#+end_src
+
+#+RESULTS:
+#+begin_example
 2025-03-03
 #+end_example
 
@@ -170,27 +121,30 @@ reasonably be converted to a ~Date~:
 ~FatDate~ provides some concise methods for printing string versions of dates
 that are often useful:
 
-#+begin_SRC ruby :results output
+#+begin_SRC ruby :results value
   d = Date.parse('1957-09-22')
-  puts "ISO: #{d.iso}"
-  puts "All Numbers: #{d.num}"
-  puts "Emacs Org Mode Inactive: #{d.org}"
-  puts "Emacs Org Mode Active: #{d.org(active: true)}"
-  puts "LaTeX: #{d.tex_quote}"
-  puts "English: #{d.eng}"
-  puts "American: #{d.american}"
+  methods = ['iso', 'num', 'tex_quote', 'eng', 'american', 'org']
+  tab = []
+  tab << ['Description', 'Result']
+  tab << nil
+  methods.each do |m|
+    tab << [m, d.send(m.to_sym)]
+  end
+  tab <<  ["org(active: true)", d.org(active: true)]
 #+end_SRC
 
+#+RESULTS:
 #+begin_example
-ISO: 1957-09-22
-All Numbers: 19570922
-Emacs Org Mode Inactive: [1957-09-22 Sun]
-Emacs Org Mode Active: <1957-09-22 Sun>
-LaTeX: 1957--09--22
-English: September 22, 1957
-American: 9/22/1957
+| Description       | Result             |
+|-------------------+--------------------|
+| iso               | 1957-09-22         |
+| num               | 19570922           |
+| tex_quote         | 1957--09--22       |
+| eng               | September 22, 1957 |
+| american          | 9/22/1957          |
+| org               | [1957-09-22 Sun]   |
+| org(active: true) | <1957-09-22 Sun>   |
 #+end_example
-
 
 Most of these are self-explanatory, but a couple are not.  The
 ~Date.org(active: false)~ method formats a date as an Emacs org-mode
@@ -220,7 +174,7 @@ as "chunks", and they are the following:
 ~FatDate~ provides methods that query whether the date falls on the beginning
 or end of each of these chunks:
 
-#+begin_SRC ruby :results value
+#+begin_SRC ruby
   tab = []
   tab << ['Subject Date', 'Method', 'Result']
   tab << nil
@@ -234,6 +188,7 @@ or end of each of these chunks:
   tab
 #+end_SRC
 
+#+RESULTS:
 #+begin_example
 | Subject Date | Method                  | Result |
 |--------------+-------------------------+--------|
@@ -272,6 +227,7 @@ or end of the calendar chunk, starting at the given date:
   tab
 #+end_SRC
 
+#+RESULTS:
 #+begin_example
 | Subject Date | Method                   | Result     |
 |--------------+--------------------------+------------|
@@ -293,7 +249,6 @@ or end of the calendar chunk, starting at the given date:
 | 2017-04-21   | d.end_of_week            | 2017-04-23 |
 #+end_example
 
-
 You can query which numerical half, quarter, etc. that a given date falls in:
 
 #+begin_SRC ruby
@@ -308,17 +263,18 @@ You can query which numerical half, quarter, etc. that a given date falls in:
   tab
 #+end_SRC
 
+#+RESULTS:
 #+begin_example
-| Subject Date | Method      | Result                 |
-|--------------+-------------+------------------------|
-| 2017-07-29   | d.year      | in year number 2017    |
-| 2017-06-10   | d.half      | in half number 1       |
-| 2017-07-17   | d.quarter   | in quarter number 3    |
-| 2017-06-03   | d.bimonth   | in bimonth number 3    |
-| 2017-06-28   | d.month     | in month number 6      |
-| 2017-06-18   | d.semimonth | in semimonth number 12 |
-| 2017-05-17   | d.biweek    | in biweek number 10    |
-| 2017-07-08   | d.week      | in week number 27      |
+| Subject Date | Method      | Result                |
+|--------------+-------------+-----------------------|
+| 2017-06-04   | d.year      | in year number 2017   |
+| 2017-05-01   | d.half      | in half number 1      |
+| 2017-05-03   | d.quarter   | in quarter number 2   |
+| 2017-04-29   | d.bimonth   | in bimonth number 2   |
+| 2017-06-14   | d.month     | in month number 6     |
+| 2017-04-29   | d.semimonth | in semimonth number 8 |
+| 2017-05-20   | d.biweek    | in biweek number 10   |
+| 2017-06-12   | d.week      | in week number 24     |
 #+end_example
 
 *** Parsing American Dates
@@ -337,9 +293,13 @@ such strings.
   end
 #+end_SRC
 
+#+RESULTS:
 #+begin_example
+=> false
 Date.parse('9/22/1957') raises Date::Error (invalid date), but
 Date.parse_american('9/22/1957') => 1957-09-22
+=> nil
+:org_babel_ruby_eoe
 #+end_example
 
 *** Holidays and Workdays
@@ -370,19 +330,52 @@ Methods concerning Federal holidays:
 - Date#prior_until_fed_workday -- starting with this date, move back until
   we hit a Federal workday
 
+  Whether a particular date is a federal holiday is complicated. Certain
+  holidays are statutory as set forth in [[https://www.govinfo.gov/content/pkg/USCODE-2024-title5/pdf/USCODE-2024-title5-partIII-subpartE-chap61-subchapI-sec6103.pdf][5 U.S.C. §6103]].  But if the holiday
+  falls on a Saturday, the prior Friday is observed; if on a Sunday, the
+  following Monday is observed.  Inauguration Day after 1965 is observed by
+  employees in Washington, D.C., and surrounding areas, effectively shutting
+  down most federal agencies.
+
+  On top of that the days of Presidential funeral are federal holidays.  On
+  top of that, each President can decree temporary holidays by Executive
+  Order, often to give employees Christmas Eve and the day after Christmas the
+  day off if they would not otherwise be off.  The ~fat_date~ library attempts
+  to capture all of this, but the days of Presidential decrees are only good
+  for the last decade or so.
+
+  Here is a sampling:
+
 #+begin_SRC ruby
   result = []
   result << ['Date', 'Federal Holiday?', 'Comment']
   result << nil
+  result << ['2014-05-16', Date.parse('2014-05-16').fed_holiday?, 'Nuttin special']
   result << ['2014-05-18', Date.parse('2014-05-18').fed_holiday?, 'A weekend']
-  result << ['2014-01-01', Date.parse('2014-05-18').fed_holiday?, 'New Year']
+  result << ['2014-01-01', Date.parse('2014-01-01').fed_holiday?, 'New Year']
+  result << ['1963-11-25', Date.parse('1963-11-25').fed_holiday?, 'JFK Funeral']
+  result << ['1973-01-25', Date.parse('1973-01-25').fed_holiday?, 'LBJ Funeral']
+  result << ['2003-12-25', Date.parse('2003-12-25').fed_holiday?, 'Christmas']
+  result << ['1961-01-20', Date.parse('1961-01-20').fed_holiday?, 'JFK Inauguration (before 1965)']
+  result << ['1969-01-20', Date.parse('1969-01-20').fed_holiday?, 'RMN Inauguration (after 1965)']
+  result << ['2012-12-24', Date.parse('2012-12-24').fed_holiday?, 'Christmas Eve Decreed by Obama']
+  result << ['2003-12-26', Date.parse('2003-12-26').fed_holiday?, 'Friday after Christmas']
 #+end_SRC
 
+#+RESULTS:
 #+begin_example
-| Date       | Federal Holiday? | Comment   |
-|------------+------------------+-----------|
-| 2014-05-18 | true             | A weekend |
-| 2014-01-01 | true             | New Year  |
+| Date       | Federal Holiday? | Comment                        |
+|------------+------------------+--------------------------------|
+| 2014-05-16 | false            | Nuttin special                 |
+| 2014-05-18 | true             | A weekend                      |
+| 2014-01-01 | true             | New Year                       |
+| 1963-11-25 | true             | JFK Funeral                    |
+| 1973-01-25 | true             | LBJ Funeral                    |
+| 2003-12-25 | true             | Christmas                      |
+| 1961-01-20 | false            | JFK Inauguration (before 1965) |
+| 1969-01-20 | true             | RMN Inauguration (after 1965)  |
+| 2012-12-24 | true             | Christmas Eve Decreed by Obama |
+| 2003-12-26 | true             | Friday after Christmas         |
 #+end_example
 
 **** NYSE
@@ -403,10 +396,11 @@ And we have similar methods for "holidays" or non-trading days on the NYSE:
 
 Likewise, days on which the NYSE is closed can be gotten with:
 
-#+begin_SRC ruby :results output
-  puts Date.parse('2014-04-18').nyse_holiday?
+#+begin_SRC ruby :results value raw
+  Date.parse('2014-04-18').nyse_holiday?
 #+end_SRC
 
+#+RESULTS:
 #+begin_example
 true
 #+end_example
@@ -428,6 +422,7 @@ true
   result
 #+end_SRC
 
+#+RESULTS:
 #+begin_example
 | Date             | Federal Holiday? | NYSE Holiday? | Comment     |
 |------------------+------------------+---------------+-------------|
@@ -436,6 +431,7 @@ true
 | [2014-05-21 Wed] | false            | false         | Any old day |
 | [2014-01-01 Wed] | true             | true          | New Year    |
 #+end_example
+
 
 *** Ordinal Weekdays in Month
 It is often useful to find the 1st, 2nd, etc, Sunday, Monday, etc. in a given
@@ -458,6 +454,7 @@ negative, which will count from the end of the month.
   results
 #+end_src
 
+#+RESULTS:
 #+begin_example
 | n  | Year | Month | nth Thursday     |
 |----+------+-------+------------------|
@@ -500,6 +497,7 @@ the reform happened after Easter in 1752.
   result
 #+end_src
 
+#+RESULTS:
 #+begin_example
 | Year | Easter Date      |
 |------+------------------|
@@ -636,13 +634,13 @@ modifier' to change the date to the first day-of-week adjacent to the date
 that the spec resolves to.  This is done by appending one of the following to
 the spec:
 
-- '<Su', '<Mo', ... '<Sa' :: change to the first Sunday, Monday, etc.,
+- '<Su', '<Mo', ... '<Sa' :: skip to the first Sunday, Monday, etc.,
   /before/ the date the spec resolves to.
-- '<=Su', '<=Mo', ... '<=Sa' :: change to the first Sunday, Monday, etc., /on
+- '<=Su', '<=Mo', ... '<=Sa' :: skip to the first Sunday, Monday, etc., /on
   or before/ the date the spec resolves to.
-- '>Su', '>Mo', ... '>Sa' :: change to the first Sunday, Monday, etc.,
+- '>Su', '>Mo', ... '>Sa' :: skip to the first Sunday, Monday, etc.,
   /after/ the date the spec resolves to.
-- '>=Su', '>=Mo', ... '>=Sa' :: change to the first Sunday, Monday, etc., /on
+- '>=Su', '>=Mo', ... '>=Sa' :: skip to the first Sunday, Monday, etc., /on
   or after/ the date the spec resolves to.
 
 For example, ~Date.spec('2024<=Tu', :to)~ resolves to the last Tuesday
@@ -683,12 +681,14 @@ The following examples demonstrate all of the date specs available.
          '2024-1H', '2024-2H', '1H', '2H',
          '1957-1Q', '1957-2Q', '1957-3Q', '1957-4Q',
          '1Q', '2Q', '3Q', '4Q',
+         '2015-06-A', '2015-06-B', '06-A', '06-B', 'A', 'B',
          '2021-09-I', '2021-09-II',
          '2021-09-i', '2021-09-ii', '2021-09-iii', '2021-09-iv', '2021-09-v',
          '10-i', '10-iii',
          '2016-04-3Tu', '2016-11-4Th', '2016-11-2Th',
          '05-3We', '06-3Wed', '3Su', '4Sa',
-         '1830-E', 'E', '2012-E+10', '2024-E+40',
+         '1830-E', 'E', '2012-E+10', '2024-E+40', '2026-E<Fri',
+         'yestermonth', 'lastmonth', 'yesterfortnight', 'thisfortnight', 'nextfortnight',
          '2025-E+50>=Su'
          ]
   tab = []
@@ -700,58 +700,69 @@ The following examples demonstrate all of the date specs available.
   tab
 #+end_src
 
+#+RESULTS:
 #+begin_example
-| Spec            | From             | To               |
-|-----------------+------------------+------------------|
-| 'today'         | [2025-10-24 Fri] | [2025-10-24 Fri] |
-| '2024-07-04'    | [2024-07-04 Thu] | [2024-07-04 Thu] |
-| '2024-05'       | [2024-05-01 Wed] | [2024-05-31 Fri] |
-| '2024'          | [2024-01-01 Mon] | [2024-12-31 Tue] |
-| '2024-333'      | [2024-11-28 Thu] | [2024-11-28 Thu] |
-| '08'            | [2025-08-01 Fri] | [2025-08-31 Sun] |
-| '08-12'         | [2025-08-12 Tue] | [2025-08-12 Tue] |
-| '2024-W36'      | [2024-09-02 Mon] | [2024-09-08 Sun] |
-| '2024-36W'      | [2024-09-02 Mon] | [2024-09-08 Sun] |
-| 'W36'           | [2025-09-01 Mon] | [2025-09-07 Sun] |
-| '36W'           | [2025-09-01 Mon] | [2025-09-07 Sun] |
-| '2024-1H'       | [2024-01-01 Mon] | [2024-06-30 Sun] |
-| '2024-2H'       | [2024-07-01 Mon] | [2024-12-31 Tue] |
-| '1H'            | [2025-01-01 Wed] | [2025-06-30 Mon] |
-| '2H'            | [2025-07-01 Tue] | [2025-12-31 Wed] |
-| '1957-1Q'       | [1957-01-01 Tue] | [1957-03-31 Sun] |
-| '1957-2Q'       | [1957-04-01 Mon] | [1957-06-30 Sun] |
-| '1957-3Q'       | [1957-07-01 Mon] | [1957-09-30 Mon] |
-| '1957-4Q'       | [1957-10-01 Tue] | [1957-12-31 Tue] |
-| '1Q'            | [2025-01-01 Wed] | [2025-03-31 Mon] |
-| '2Q'            | [2025-04-01 Tue] | [2025-06-30 Mon] |
-| '3Q'            | [2025-07-01 Tue] | [2025-09-30 Tue] |
-| '4Q'            | [2025-10-01 Wed] | [2025-12-31 Wed] |
-| '2021-09-I'     | [2021-09-01 Wed] | [2021-09-05 Sun] |
-| '2021-09-II'    | [2021-09-06 Mon] | [2021-09-12 Sun] |
-| '2021-09-i'     | [2021-09-01 Wed] | [2021-09-05 Sun] |
-| '2021-09-ii'    | [2021-09-06 Mon] | [2021-09-12 Sun] |
-| '2021-09-iii'   | [2021-09-13 Mon] | [2021-09-19 Sun] |
-| '2021-09-iv'    | [2021-09-20 Mon] | [2021-09-26 Sun] |
-| '2021-09-v'     | [2021-09-27 Mon] | [2021-09-30 Thu] |
-| '10-i'          | [2025-10-01 Wed] | [2025-10-05 Sun] |
-| '10-iii'        | [2025-10-13 Mon] | [2025-10-19 Sun] |
-| '2016-04-3Tu'   | [2016-04-19 Tue] | [2016-04-19 Tue] |
-| '2016-11-4Th'   | [2016-11-24 Thu] | [2016-11-24 Thu] |
-| '2016-11-2Th'   | [2016-11-10 Thu] | [2016-11-10 Thu] |
-| '05-3We'        | [2025-05-21 Wed] | [2025-05-21 Wed] |
-| '06-3Wed'       | [2025-06-18 Wed] | [2025-06-18 Wed] |
-| '3Su'           | [2025-10-19 Sun] | [2025-10-19 Sun] |
-| '4Sa'           | [2025-10-25 Sat] | [2025-10-25 Sat] |
-| '1830-E'        | [1830-04-11 Sun] | [1830-04-11 Sun] |
-| 'E'             | [2025-04-20 Sun] | [2025-04-20 Sun] |
-| '2012-E+10'     | [2012-04-18 Wed] | [2012-04-18 Wed] |
-| '2024-E+40'     | [2024-05-10 Fri] | [2024-05-10 Fri] |
-| '2025-E+50>=Su' | [2025-06-15 Sun] | [2025-06-15 Sun] |
+| Spec              | From             | To               |
+|-------------------+------------------+------------------|
+| 'today'           | [2025-12-24 Wed] | [2025-12-24 Wed] |
+| '2024-07-04'      | [2024-07-04 Thu] | [2024-07-04 Thu] |
+| '2024-05'         | [2024-05-01 Wed] | [2024-05-31 Fri] |
+| '2024'            | [2024-01-01 Mon] | [2024-12-31 Tue] |
+| '2024-333'        | [2024-11-28 Thu] | [2024-11-28 Thu] |
+| '08'              | [2025-08-01 Fri] | [2025-08-31 Sun] |
+| '08-12'           | [2025-08-12 Tue] | [2025-08-12 Tue] |
+| '2024-W36'        | [2024-09-02 Mon] | [2024-09-08 Sun] |
+| '2024-36W'        | [2024-09-02 Mon] | [2024-09-08 Sun] |
+| 'W36'             | [2025-09-01 Mon] | [2025-09-07 Sun] |
+| '36W'             | [2025-09-01 Mon] | [2025-09-07 Sun] |
+| '2024-1H'         | [2024-01-01 Mon] | [2024-06-30 Sun] |
+| '2024-2H'         | [2024-07-01 Mon] | [2024-12-31 Tue] |
+| '1H'              | [2025-01-01 Wed] | [2025-06-30 Mon] |
+| '2H'              | [2025-07-01 Tue] | [2025-12-31 Wed] |
+| '1957-1Q'         | [1957-01-01 Tue] | [1957-03-31 Sun] |
+| '1957-2Q'         | [1957-04-01 Mon] | [1957-06-30 Sun] |
+| '1957-3Q'         | [1957-07-01 Mon] | [1957-09-30 Mon] |
+| '1957-4Q'         | [1957-10-01 Tue] | [1957-12-31 Tue] |
+| '1Q'              | [2025-01-01 Wed] | [2025-03-31 Mon] |
+| '2Q'              | [2025-04-01 Tue] | [2025-06-30 Mon] |
+| '3Q'              | [2025-07-01 Tue] | [2025-09-30 Tue] |
+| '4Q'              | [2025-10-01 Wed] | [2025-12-31 Wed] |
+| '2015-06-A'       | [2015-06-01 Mon] | [2015-06-15 Mon] |
+| '2015-06-B'       | [2015-06-16 Tue] | [2015-06-30 Tue] |
+| '06-A'            | [2025-06-01 Sun] | [2025-06-15 Sun] |
+| '06-B'            | [2025-06-16 Mon] | [2025-06-30 Mon] |
+| 'A'               | [2025-12-01 Mon] | [2025-12-15 Mon] |
+| 'B'               | [2025-12-16 Tue] | [2025-12-31 Wed] |
+| '2021-09-I'       | [2021-09-01 Wed] | [2021-09-05 Sun] |
+| '2021-09-II'      | [2021-09-06 Mon] | [2021-09-12 Sun] |
+| '2021-09-i'       | [2021-09-01 Wed] | [2021-09-05 Sun] |
+| '2021-09-ii'      | [2021-09-06 Mon] | [2021-09-12 Sun] |
+| '2021-09-iii'     | [2021-09-13 Mon] | [2021-09-19 Sun] |
+| '2021-09-iv'      | [2021-09-20 Mon] | [2021-09-26 Sun] |
+| '2021-09-v'       | [2021-09-27 Mon] | [2021-09-30 Thu] |
+| '10-i'            | [2025-10-01 Wed] | [2025-10-05 Sun] |
+| '10-iii'          | [2025-10-13 Mon] | [2025-10-19 Sun] |
+| '2016-04-3Tu'     | [2016-04-19 Tue] | [2016-04-19 Tue] |
+| '2016-11-4Th'     | [2016-11-24 Thu] | [2016-11-24 Thu] |
+| '2016-11-2Th'     | [2016-11-10 Thu] | [2016-11-10 Thu] |
+| '05-3We'          | [2025-05-21 Wed] | [2025-05-21 Wed] |
+| '06-3Wed'         | [2025-06-18 Wed] | [2025-06-18 Wed] |
+| '3Su'             | [2025-12-21 Sun] | [2025-12-21 Sun] |
+| '4Sa'             | [2025-12-27 Sat] | [2025-12-27 Sat] |
+| '1830-E'          | [1830-04-11 Sun] | [1830-04-11 Sun] |
+| 'E'               | [2025-04-20 Sun] | [2025-04-20 Sun] |
+| '2012-E+10'       | [2012-04-18 Wed] | [2012-04-18 Wed] |
+| '2024-E+40'       | [2024-05-10 Fri] | [2024-05-10 Fri] |
+| '2026-E<Fri'      | [2026-04-03 Fri] | [2026-04-03 Fri] |
+| 'yestermonth'     | [2025-11-01 Sat] | [2025-11-30 Sun] |
+| 'lastmonth'       | [2025-11-01 Sat] | [2025-11-30 Sun] |
+| 'yesterfortnight' | [2025-12-08 Mon] | [2025-12-21 Sun] |
+| 'thisfortnight'   | [2025-12-22 Mon] | [2026-01-04 Sun] |
+| 'nextfortnight'   | [2026-01-05 Mon] | [2026-01-18 Sun] |
+| '2025-E+50>=Su'   | [2025-06-15 Sun] | [2025-06-15 Sun] |
 #+end_example
 
-
 * Contributing
-
 1. Fork it ([[http://github.com/ddoherty03/fat_date/fork]]  )
 2. Create your feature branch (~git checkout -b my-new-feature~)
 3. Commit your changes (~git commit -am 'Add some feature'~)
