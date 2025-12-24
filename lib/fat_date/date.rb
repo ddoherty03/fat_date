@@ -936,6 +936,9 @@ module FatDate
         ::Date.parse('2020-12-24'),
         # Biden
         ::Date.parse('2024-12-24'),
+        # Trump
+        ::Date.parse('2025-12-24'),
+        ::Date.parse('2025-12-26'),
       ]
 
     # Presidential funeral since JFK
