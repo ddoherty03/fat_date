@@ -53,7 +53,7 @@ GEM
       damerau-levenshtein
       ostruct
       stringio (>= 3.1.2)
-    gem_docs (0.1.2)
+    gem_docs (0.2.0)
       rake
       yard
     i18n (1.14.7)
@@ -163,7 +163,7 @@ DEPENDENCIES
   bundler
   debug (>= 1.0.0)
   fat_date!
-  gem_docs (>= 0.1.2)
+  gem_docs (>= 0.2.0)
   irb
   pry
   pry-doc

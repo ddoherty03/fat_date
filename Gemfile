@@ -18,5 +18,5 @@ group :development do
   gem 'rubocop', require: false
   gem 'rubocop-ddoherty', git: 'https://github.com/ddoherty03/rubocop-ddoherty.git', branch: 'master', require: false
   gem 'simplecov'
-  gem 'gem_docs', '>= 0.1.2'
+  gem 'gem_docs', '>= 0.2.0'
 end
