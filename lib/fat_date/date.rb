@@ -925,7 +925,7 @@ module FatDate
     end
 
     # Holidays decreed by Presidential proclamation
-    FED_DECREED_HOLIDAYS =
+   FED_DECREED_HOLIDAYS =
       [
         # Obama decree extra day before Christmas See
         # http://www.whitehouse.gov/the-press-office/2012/12/21
@@ -1321,6 +1321,21 @@ module FatDate
       when 5
         # Memorial Day (Last Monday in May)
         year <= 1970 ? (month == 5 && day == 30) : nth_wday_in_month?(-1, 1, 5)
+      when 6
+        # Juneteenth, starting 2022.  On June 19, but moved to prior Friday if
+        # it falls on Saturday and moved to Monday if it fall on Sunday.
+        if year < 2022
+          false
+        else
+          jun19 = Date.new(year, 6, 19)
+          if jun19.saturday?
+            day == 18
+          elsif jun19.sunday?
+            day == 20
+          else
+            day == 19
+          end
+        end
       when 9
         # Labor Day (First Monday in Sep)
         nth_wday_in_month?(1, 1, 9)
