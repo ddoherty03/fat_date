@@ -1292,7 +1292,7 @@ module FatDate
       # rigged to fall on Monday except Thanksgiving
 
       # No moveable feasts in certain months
-      return false if [6, 7, 8, 10, 12].include?(month)
+      return false if [7, 8, 10, 12].include?(month)
 
       case month
       when 1
@@ -1327,7 +1327,7 @@ module FatDate
         if year < 2022
           false
         else
-          jun19 = Date.new(year, 6, 19)
+          jun19 = ::Date.new(year, 6, 19)
           if jun19.saturday?
             day == 18
           elsif jun19.sunday?

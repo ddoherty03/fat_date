@@ -1304,6 +1304,7 @@ RSpec.describe Date do
         expect(Date.parse('2015-11-11')).not_to be_nyse_holiday
         expect(Date.parse('2015-11-26')).to be_nyse_holiday
         expect(Date.parse('2015-12-25')).to be_nyse_holiday
+        expect(Date.parse('2026-06-19')).to be_nyse_holiday
 
         expect(Date.parse('2016-01-01')).to be_nyse_holiday
         expect(Date.parse('2016-01-18')).to be_nyse_holiday
