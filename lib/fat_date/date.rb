@@ -2022,7 +2022,8 @@ module FatDate
 
       # Ensure that date is of class Date based either on a string or Date
       # object or an object that responds to #to_date or #to_datetime.  If the
-      # given object is a String, use Date.parse to try to convert it.
+      # given object is a String, use Date.parse unless it contains time
+      # components, in which case use DateTime.parse.
       #
       # If given a DateTime, it returns the unrounded DateTime; if given a
       # Time, it converts it to a DateTime.
@@ -2034,16 +2035,21 @@ module FatDate
           dat
         elsif dat.is_a?(Time)
           dat.to_datetime
+        elsif dat.is_a?(String)
+          begin
+            parts = ::Date._parse(dat)
+            if %i[hour min sec sec_fraction].any? { |part| parts.key?(part) }
+              ::DateTime.parse(dat)
+            else
+              ::Date.parse(dat)
+            end
+          rescue ::Date::Error
+            raise ArgumentError, "cannot convert string '#{dat}' to a Date or DateTime"
+          end
         elsif dat.respond_to?(:to_datetime)
           dat.to_datetime
         elsif dat.respond_to?(:to_date)
           dat.to_date
-        elsif dat.is_a?(String)
-          begin
-            ::Date.parse(dat)
-          rescue ::Date::Error
-            raise ArgumentError, "cannot convert string '#{dat}' to a Date or DateTime"
-          end
         else
           raise ArgumentError, "cannot convert class '#{dat.class}' to a Date or DateTime"
         end

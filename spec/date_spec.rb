@@ -21,9 +21,39 @@ RSpec.describe Date do
     end
 
     describe 'ensure_date parsing' do
+      let(:ensure_methods) { [:ensure, :ensure_date] }
+
       it 'parses a String as a date' do
         expect(Date.ensure_date('2018-11-12').class).to be Date
         expect(Date.ensure('2018-11-12').class).to be Date
+      end
+
+      ['2018-11-12', 'November 12, 2018', '20181112'].each do |string|
+        it "returns a pure Date for #{string}" do
+          ensure_methods.each do |method|
+            result = Date.public_send(method, string)
+            expect(result).to be_an_instance_of(Date)
+            expect(result).to eq Date.new(2018, 11, 12)
+          end
+        end
+      end
+
+      ['2018-11-12T13:14:15.125-06:00', '2018-11-12 00:00:00', 'November 12, 2018 3pm'].each do |string|
+        it "preserves explicit time components in #{string}" do
+          ensure_methods.each do |method|
+            result = Date.public_send(method, string)
+            expected = DateTime.parse(string)
+            expect(result).to be_an_instance_of(DateTime)
+            expect(result).to eq expected
+            expect(result.offset).to eq expected.offset
+          end
+        end
+      end
+
+      it 'preserves an existing DateTime' do
+        datetime = DateTime.new(2018, 11, 12, 13, 14, 15)
+        expect(Date.ensure(datetime)).to equal datetime
+        expect(Date.ensure_date(datetime)).to equal datetime
       end
 
       it 'leaves a Date as a date' do
