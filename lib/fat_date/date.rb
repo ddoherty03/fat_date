@@ -925,7 +925,7 @@ module FatDate
     end
 
     # Holidays decreed by Presidential proclamation
-   FED_DECREED_HOLIDAYS =
+    FED_DECREED_HOLIDAYS =
       [
         # Obama decree extra day before Christmas See
         # http://www.whitehouse.gov/the-press-office/2012/12/21
@@ -1328,12 +1328,12 @@ module FatDate
           false
         else
           jun19 = ::Date.new(year, 6, 19)
-          if jun19.saturday?
-            day == 18
+          day == if jun19.saturday?
+            18
           elsif jun19.sunday?
-            day == 20
+            20
           else
-            day == 19
+            19
           end
         end
       when 9
@@ -2067,6 +2067,4 @@ module FatDate
 end
 
 # Include the FatDate methods in Date.
-class Date
-  include FatDate::Date
-end
+Date.include(FatDate::Date)

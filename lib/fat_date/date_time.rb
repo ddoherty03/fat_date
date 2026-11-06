@@ -27,6 +27,4 @@ module FatDate
 end
 
 # Include the FatDate instance and class methods in DateTime.
-class DateTime
-  include FatDate::DateTime
-end
+DateTime.include(FatDate::DateTime)
